@@ -1,0 +1,241 @@
+{
+  "artists": [
+    {
+      "id": "artist_1",
+      "name": "The District Echoes",
+      "popularity": 78,
+      "monthly_listeners": 420000,
+      "home_city": "Washington",
+      "home_state": "DC",
+      "genres": ["indie rock", "alternative", "dream pop"]
+    },
+    {
+      "id": "artist_2",
+      "name": "Harbor Lights",
+      "popularity": 64,
+      "monthly_listeners": 190000,
+      "home_city": "Baltimore",
+      "home_state": "MD",
+      "genres": ["r&b", "neo soul", "pop"]
+    },
+    {
+      "id": "artist_3",
+      "name": "Broad Street Static",
+      "popularity": 71,
+      "monthly_listeners": 315000,
+      "home_city": "Philadelphia",
+      "home_state": "PA",
+      "genres": ["punk", "indie rock", "garage rock"]
+    },
+    {
+      "id": "artist_4",
+      "name": "Midnight Borough",
+      "popularity": 88,
+      "monthly_listeners": 830000,
+      "home_city": "New York",
+      "home_state": "NY",
+      "genres": ["hip hop", "rap", "trap"]
+    },
+    {
+      "id": "artist_5",
+      "name": "Campus Bloom",
+      "popularity": 53,
+      "monthly_listeners": 92000,
+      "home_city": "College Park",
+      "home_state": "MD",
+      "genres": ["bedroom pop", "indie pop", "folk"]
+    }
+  ],
+  "venues": [
+    {
+      "id": "venue_1",
+      "name": "9:30 Club",
+      "city": "Washington",
+      "state": "DC",
+      "capacity": 1200,
+      "genres": ["indie rock", "alternative", "pop", "electronic"]
+    },
+    {
+      "id": "venue_2",
+      "name": "The Anthem",
+      "city": "Washington",
+      "state": "DC",
+      "capacity": 6000,
+      "genres": ["pop", "rock", "hip hop", "electronic"]
+    },
+    {
+      "id": "venue_3",
+      "name": "Baltimore Soundstage",
+      "city": "Baltimore",
+      "state": "MD",
+      "capacity": 1000,
+      "genres": ["metal", "punk", "hip hop", "r&b"]
+    },
+    {
+      "id": "venue_4",
+      "name": "Union Transfer",
+      "city": "Philadelphia",
+      "state": "PA",
+      "capacity": 1200,
+      "genres": ["indie rock", "punk", "alternative", "folk"]
+    },
+    {
+      "id": "venue_5",
+      "name": "Brooklyn Steel",
+      "city": "New York",
+      "state": "NY",
+      "capacity": 1800,
+      "genres": ["indie rock", "electronic", "hip hop", "pop"]
+    },
+    {
+      "id": "venue_6",
+      "name": "The Hall CP",
+      "city": "College Park",
+      "state": "MD",
+      "capacity": 500,
+      "genres": ["indie pop", "folk", "bedroom pop", "alternative"]
+    }
+  ],
+  "events": [
+    {
+      "id": "event_1",
+      "artist_id": "artist_1",
+      "venue_id": "venue_1",
+      "event_date": "2025-04-18",
+      "city": "Washington",
+      "state": "DC",
+      "genre": "indie rock",
+      "attendance_estimate": 1050,
+      "outcome_label": 1
+    },
+    {
+      "id": "event_2",
+      "artist_id": "artist_2",
+      "venue_id": "venue_3",
+      "event_date": "2025-03-11",
+      "city": "Baltimore",
+      "state": "MD",
+      "genre": "r&b",
+      "attendance_estimate": 740,
+      "outcome_label": 1
+    },
+    {
+      "id": "event_3",
+      "artist_id": "artist_3",
+      "venue_id": "venue_4",
+      "event_date": "2025-02-08",
+      "city": "Philadelphia",
+      "state": "PA",
+      "genre": "punk",
+      "attendance_estimate": 990,
+      "outcome_label": 1
+    },
+    {
+      "id": "event_4",
+      "artist_id": "artist_4",
+      "venue_id": "venue_2",
+      "event_date": "2025-05-22",
+      "city": "Washington",
+      "state": "DC",
+      "genre": "hip hop",
+      "attendance_estimate": 5200,
+      "outcome_label": 1
+    },
+    {
+      "id": "event_5",
+      "artist_id": "artist_5",
+      "venue_id": "venue_6",
+      "event_date": "2025-01-27",
+      "city": "College Park",
+      "state": "MD",
+      "genre": "indie pop",
+      "attendance_estimate": 430,
+      "outcome_label": 1
+    },
+    {
+      "id": "event_6",
+      "artist_id": "artist_5",
+      "venue_id": "venue_2",
+      "event_date": "2025-06-14",
+      "city": "Washington",
+      "state": "DC",
+      "genre": "indie pop",
+      "attendance_estimate": 280,
+      "outcome_label": 0
+    }
+  ],
+  "city_demographics": [
+    {
+      "city": "Washington",
+      "state": "DC",
+      "population": 689545,
+      "median_age": 34.9,
+      "median_income": 101722
+    },
+    {
+      "city": "Baltimore",
+      "state": "MD",
+      "population": 565239,
+      "median_age": 35.3,
+      "median_income": 60387
+    },
+    {
+      "city": "Philadelphia",
+      "state": "PA",
+      "population": 1567442,
+      "median_age": 35.1,
+      "median_income": 60888
+    },
+    {
+      "city": "New York",
+      "state": "NY",
+      "population": 8258035,
+      "median_age": 37.3,
+      "median_income": 76322
+    },
+    {
+      "city": "College Park",
+      "state": "MD",
+      "population": 34668,
+      "median_age": 21.3,
+      "median_income": 78731
+    }
+  ],
+  "city_genre_signals": [
+    {"city": "Washington", "state": "DC", "genre": "indie rock", "signal_strength": 0.84},
+    {"city": "Washington", "state": "DC", "genre": "hip hop", "signal_strength": 0.89},
+    {"city": "Washington", "state": "DC", "genre": "pop", "signal_strength": 0.81},
+    {"city": "Baltimore", "state": "MD", "genre": "r&b", "signal_strength": 0.87},
+    {"city": "Baltimore", "state": "MD", "genre": "hip hop", "signal_strength": 0.82},
+    {"city": "Baltimore", "state": "MD", "genre": "punk", "signal_strength": 0.58},
+    {"city": "Philadelphia", "state": "PA", "genre": "punk", "signal_strength": 0.86},
+    {"city": "Philadelphia", "state": "PA", "genre": "indie rock", "signal_strength": 0.83},
+    {"city": "Philadelphia", "state": "PA", "genre": "folk", "signal_strength": 0.61},
+    {"city": "New York", "state": "NY", "genre": "hip hop", "signal_strength": 0.92},
+    {"city": "New York", "state": "NY", "genre": "electronic", "signal_strength": 0.88},
+    {"city": "New York", "state": "NY", "genre": "pop", "signal_strength": 0.9},
+    {"city": "College Park", "state": "MD", "genre": "indie pop", "signal_strength": 0.79},
+    {"city": "College Park", "state": "MD", "genre": "folk", "signal_strength": 0.68},
+    {"city": "College Park", "state": "MD", "genre": "bedroom pop", "signal_strength": 0.74}
+  ],
+  "venue_genre_history": [
+    {"venue_id": "venue_1", "genre": "indie rock", "event_count": 14},
+    {"venue_id": "venue_1", "genre": "alternative", "event_count": 11},
+    {"venue_id": "venue_1", "genre": "pop", "event_count": 8},
+    {"venue_id": "venue_2", "genre": "hip hop", "event_count": 16},
+    {"venue_id": "venue_2", "genre": "pop", "event_count": 13},
+    {"venue_id": "venue_2", "genre": "rock", "event_count": 10},
+    {"venue_id": "venue_3", "genre": "r&b", "event_count": 12},
+    {"venue_id": "venue_3", "genre": "hip hop", "event_count": 10},
+    {"venue_id": "venue_3", "genre": "punk", "event_count": 7},
+    {"venue_id": "venue_4", "genre": "punk", "event_count": 15},
+    {"venue_id": "venue_4", "genre": "indie rock", "event_count": 14},
+    {"venue_id": "venue_4", "genre": "folk", "event_count": 9},
+    {"venue_id": "venue_5", "genre": "electronic", "event_count": 16},
+    {"venue_id": "venue_5", "genre": "hip hop", "event_count": 11},
+    {"venue_id": "venue_5", "genre": "indie rock", "event_count": 10},
+    {"venue_id": "venue_6", "genre": "indie pop", "event_count": 9},
+    {"venue_id": "venue_6", "genre": "folk", "event_count": 7},
+    {"venue_id": "venue_6", "genre": "bedroom pop", "event_count": 8}
+  ]
+}
