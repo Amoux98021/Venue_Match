@@ -10,6 +10,12 @@ class LastFMClient(BaseAPIClient):
     def __init__(self) -> None:
         super().__init__()
         self.api_key = get_env("LASTFM_API_KEY")
+        self.headers = {
+            "User-Agent": get_env(
+                "MUSICBRAINZ_USER_AGENT",
+                "VenueMatch/1.0 (https://github.com/Amoux98021/Venue_Match)",
+            )
+        }
 
     def get_artist_tags(self, artist_name: str) -> dict:
         if not self.api_key:
@@ -22,6 +28,7 @@ class LastFMClient(BaseAPIClient):
                 "api_key": self.api_key,
                 "format": "json",
             },
+            headers=self.headers,
         )
 
     def get_artist_info(self, artist_name: str) -> dict:
@@ -36,6 +43,7 @@ class LastFMClient(BaseAPIClient):
                 "api_key": self.api_key,
                 "format": "json",
             },
+            headers=self.headers,
         )
 
     def get_metro_top_tracks(self, country: str, location: str, limit: int = 50) -> dict:
@@ -51,4 +59,5 @@ class LastFMClient(BaseAPIClient):
                 "api_key": self.api_key,
                 "format": "json",
             },
+            headers=self.headers,
         )

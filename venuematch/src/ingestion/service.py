@@ -123,7 +123,15 @@ def _number(value: Any, caster: type[int] | type[float]) -> int | float | None:
 def _safe_provider_error(provider: str, error: Exception) -> str:
     response = getattr(error, "response", None)
     status_code = getattr(response, "status_code", None)
+    api_code = None
+    if response is not None:
+        try:
+            api_code = response.json().get("error")
+        except (AttributeError, TypeError, ValueError):
+            pass
     suffix = f" HTTP {status_code}" if status_code else f" {type(error).__name__}"
+    if api_code is not None:
+        suffix += f"/API {api_code}"
     return f"{provider}:{suffix.strip()}"
 
 
@@ -250,6 +258,9 @@ def _enrich_lastfm(
                     genre_rows.add((artist["id"], genre))
         except Exception as error:  # Provider failures should not discard valid event data.
             errors.append(_safe_provider_error("lastfm", error))
+            status_code = getattr(getattr(error, "response", None), "status_code", None)
+            if status_code in {401, 403}:
+                break
 
 
 def _enrich_musicbrainz(
