@@ -1,17 +1,20 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
+from dataclasses import asdict
 from datetime import date, datetime
+from secrets import compare_digest
 from typing import Any, Callable, Optional
 
 import pandas as pd
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.bootstrap import ensure_database_ready
 from src.api.schemas import ArtistVenueRequest, RecommendationResponse, VenueArtistRequest
 from src.db import repository
 from src.db.database import database_backend
+from src.ingestion import get_ingestion_status, run_live_ingestion
 from src.scoring.recommender import WEIGHTS, recommend_artists_for_venue, recommend_venues_for_artist
 from src.utils.config import credentials_available, get_env
 
@@ -41,6 +44,8 @@ def _records(frame: pd.DataFrame) -> list[dict[str, Any]]:
 
 
 def _data_mode() -> str:
+    if repository.has_live_data():
+        return "live"
     return "live-ready" if any(credentials_available().values()) else "sample"
 
 
@@ -167,6 +172,7 @@ RAW_DATASETS: dict[str, Callable[[], pd.DataFrame]] = {
     "city_genre_signals": repository.get_city_genre_signals,
     "venue_genre_history": repository.get_venue_genre_history,
     "recommendations": repository.get_recommendations,
+    "ingestion_runs": repository.get_ingestion_runs,
 }
 
 
@@ -181,3 +187,24 @@ def raw_preview(dataset: str, limit: int = Query(default=50, ge=1, le=250)) -> d
         )
     frame = loader().head(limit)
     return {"dataset": dataset, "count": len(frame), "rows": _records(frame)}
+
+
+@app.get("/ingestion/status")
+def ingestion_status() -> dict[str, Any]:
+    ensure_database_ready()
+    return get_ingestion_status()
+
+
+@app.get("/ingestion/sync")
+def ingestion_sync(authorization: Optional[str] = Header(default=None)) -> dict[str, Any]:
+    secret = get_env("CRON_SECRET")
+    expected = f"Bearer {secret}" if secret else ""
+    if not authorization or not expected or not compare_digest(authorization, expected):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    try:
+        return asdict(run_live_ingestion())
+    except RuntimeError as error:
+        raise HTTPException(
+            status_code=503,
+            detail="Live ingestion could not complete; inspect provider configuration and logs.",
+        ) from error

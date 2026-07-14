@@ -16,6 +16,7 @@ DatabaseTarget = Union[str, Path, None]
 
 ADDITIVE_COLUMNS = {
     "artists": {
+        "lastfm_listeners": "FLOAT",
         "musicbrainz_id": "VARCHAR",
         "ticketmaster_id": "VARCHAR",
         "lastfm_url": "TEXT",
@@ -28,11 +29,25 @@ ADDITIVE_COLUMNS = {
         "longitude": "FLOAT",
         "capacity_source_url": "TEXT",
         "capacity_verified_at": "TIMESTAMP",
+        "data_source": "VARCHAR",
         "updated_at": "TIMESTAMP",
     },
     "events": {
         "source": "VARCHAR",
         "external_id": "VARCHAR",
+        "updated_at": "TIMESTAMP",
+    },
+    "city_demographics": {
+        "data_source": "VARCHAR",
+        "updated_at": "TIMESTAMP",
+    },
+    "city_genre_signals": {
+        "data_source": "VARCHAR",
+        "updated_at": "TIMESTAMP",
+    },
+    "venue_genre_history": {
+        "data_source": "VARCHAR",
+        "updated_at": "TIMESTAMP",
     },
 }
 

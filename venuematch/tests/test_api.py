@@ -47,3 +47,9 @@ def test_unknown_artist_returns_404() -> None:
             json={"artist_name": "Not A Seed Artist", "target_city": "Washington"},
         )
         assert response.status_code == 404
+
+
+def test_ingestion_sync_requires_cron_secret() -> None:
+    with TestClient(app) as client:
+        response = client.get("/ingestion/sync")
+        assert response.status_code == 401

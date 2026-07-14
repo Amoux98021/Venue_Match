@@ -13,6 +13,7 @@ FastAPI scoring API (Vercel Python)
   -> SQLAlchemy
 SQLite locally / Neon Postgres in production
   -> Ticketmaster, Last.fm, MusicBrainz, Census
+  -> protected daily ingestion cron
 ```
 
 ## Features
@@ -24,6 +25,7 @@ SQLite locally / Neon Postgres in production
 - Whitelisted raw-data previews
 - Automatic sample mode for Washington, Baltimore, Philadelphia, New York, and College Park
 - Postgres-ready relational schema and baseline ML training placeholder
+- Idempotent live-data ingestion with bounded event retention
 
 ## Local setup
 
@@ -79,6 +81,23 @@ VENUE_MATCH_API_URL=http://127.0.0.1:8000
 ```
 
 Spotify is optional enrichment. VenueMatch uses Last.fm listeners/play counts and event frequency as its primary popularity signals so Spotify restrictions do not block the product.
+
+## Live data ingestion
+
+Run a refresh locally after configuring API credentials and `DATABASE_URL`:
+
+```bash
+python scripts/ingest_live.py
+```
+
+Production exposes `GET /ingestion/sync`, protected by `CRON_SECRET`. Vercel calls it once daily at approximately 07:00 UTC. Each refresh:
+
+- requests up to 75 upcoming music events for each launch city
+- upserts artists, venues, events, tags, and Census demographics
+- rebuilds city-demand and venue-booking signals from normalized event rows
+- retains one year of Ticketmaster event records and stores no raw API responses
+
+`GET /ingestion/status` reports table counts, the latest run, and Postgres database size. The Neon Free plan currently allows 0.5 GB per project, so the bounded normalized dataset is intentionally much smaller than the available storage.
 
 ## Scoring model
 

@@ -4,10 +4,13 @@ from collections.abc import Mapping
 from typing import Any
 
 import pandas as pd
-from sqlalchemy import insert, text
+from sqlalchemy import delete, func, insert, select, text
 
 from src.db.database import DatabaseTarget, get_connection
-from src.db.schema import recommendations
+from src.db.schema import artists, ingestion_runs, recommendations
+
+
+RECOMMENDATION_RETENTION_DAYS = 30
 
 
 def fetch_dataframe(
@@ -60,9 +63,29 @@ def get_recommendations(db_target: DatabaseTarget = None) -> pd.DataFrame:
     )
 
 
+def get_ingestion_runs(db_target: DatabaseTarget = None) -> pd.DataFrame:
+    return fetch_dataframe(
+        "SELECT * FROM ingestion_runs ORDER BY started_at DESC, id DESC",
+        db_target=db_target,
+    )
+
+
+def has_live_data(db_target: DatabaseTarget = None) -> bool:
+    with get_connection(db_target) as connection:
+        count = connection.scalar(
+            select(func.count()).select_from(artists).where(artists.c.data_source != "sample")
+        )
+    return bool(count)
+
+
 def upsert_recommendations(records: list[dict[str, Any]], db_target: DatabaseTarget = None) -> None:
     if not records:
         return
 
     with get_connection(db_target) as connection:
+        if connection.dialect.name == "sqlite":
+            cutoff = func.datetime("now", f"-{RECOMMENDATION_RETENTION_DAYS} days")
+        else:
+            cutoff = func.now() - text(f"INTERVAL '{RECOMMENDATION_RETENTION_DAYS} days'")
+        connection.execute(delete(recommendations).where(recommendations.c.created_at < cutoff))
         connection.execute(insert(recommendations), records)

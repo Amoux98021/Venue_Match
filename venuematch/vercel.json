@@ -5,5 +5,11 @@
       "excludeFiles": "{tests/**,web/**,data/processed/**,data/raw/**,**/__pycache__/**}",
       "maxDuration": 60
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/ingestion/sync",
+      "schedule": "0 7 * * *"
+    }
+  ]
 }
