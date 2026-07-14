@@ -1,8 +1,14 @@
+from datetime import datetime, timezone
 from pathlib import Path
 
 from src.db import repository
 from src.db.seed import seed_sample_data
-from src.ingestion.service import IngestionClients, get_ingestion_status, run_live_ingestion
+from src.ingestion.service import (
+    IngestionClients,
+    _apply_capacity_overrides,
+    get_ingestion_status,
+    run_live_ingestion,
+)
 from src.scoring.recommender import recommend_venues_for_artist
 
 
@@ -135,3 +141,23 @@ def test_empty_ticketmaster_refresh_preserves_existing_data(tmp_path: Path) -> N
         raise AssertionError("Expected empty Ticketmaster refresh to fail")
 
     assert "The District Echoes" in repository.get_artists(database_path)["name"].tolist()
+
+
+def test_manual_capacity_override_is_persistent() -> None:
+    venue_rows = {
+        "venue_nikki": {
+            "id": "venue_nikki",
+            "name": "Nikki Lopez Philly",
+            "city": "Philadelphia",
+            "state": "PA",
+            "data_source": "ticketmaster",
+        }
+    }
+    source_rows = []
+
+    updated = _apply_capacity_overrides(venue_rows, source_rows, now=datetime.now(timezone.utc))
+
+    assert updated == 1
+    assert venue_rows["venue_nikki"]["capacity"] == 150
+    assert venue_rows["venue_nikki"]["capacity_source"] == "manual"
+    assert source_rows[0]["capacity"] == 150

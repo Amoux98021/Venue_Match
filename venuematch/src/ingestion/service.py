@@ -33,7 +33,8 @@ from src.db.schema import (
     venues,
 )
 from src.db.seed import DELETE_ORDER
-from src.utils.config import credentials_available
+from src.utils.config import PROJECT_ROOT, credentials_available
+from src.utils.io import read_json
 
 
 @dataclass(frozen=True)
@@ -59,6 +60,7 @@ LASTFM_ARTISTS_PER_RUN = 8
 MUSICBRAINZ_ARTISTS_PER_RUN = 3
 JAMBASE_CAPACITY_RECHECK_DAYS = 30
 JAMBASE_VENUES_PER_RUN = 40
+CAPACITY_OVERRIDE_PATH = PROJECT_ROOT / "data" / "manual" / "venue_capacity_overrides.json"
 
 
 @dataclass
@@ -391,6 +393,61 @@ def _enrich_jambase_capacities(
     return source_rows, checked, updated
 
 
+def _apply_capacity_overrides(
+    venue_rows: dict[str, dict[str, Any]],
+    source_rows: list[dict[str, Any]],
+    now: datetime,
+) -> int:
+    if not CAPACITY_OVERRIDE_PATH.exists():
+        return 0
+
+    venue_by_location = {
+        (venue["name"].casefold(), venue["city"].casefold(), venue["state"].casefold()): venue
+        for venue in venue_rows.values()
+    }
+    updated = 0
+    for override in read_json(CAPACITY_OVERRIDE_PATH).get("venues", []):
+        key = (
+            str(override.get("name", "")).casefold(),
+            str(override.get("city", "")).casefold(),
+            str(override.get("state", "")).casefold(),
+        )
+        venue = venue_by_location.get(key)
+        capacity = _number(override.get("capacity"), int)
+        if venue is None or capacity is None or capacity <= 0:
+            continue
+
+        source = str(override.get("source") or "manual")
+        verified_value = override.get("verified_at")
+        try:
+            verified_at = datetime.fromisoformat(verified_value) if verified_value else now
+        except (TypeError, ValueError):
+            verified_at = now
+        source_url = override.get("source_url")
+        venue.update(
+            {
+                "capacity": capacity,
+                "capacity_source": source,
+                "capacity_source_url": source_url,
+                "capacity_verified_at": verified_at,
+                "data_source": _source_list(venue.get("data_source"), source),
+            }
+        )
+        source_rows.append(
+            {
+                "venue_id": venue["id"],
+                "source": source,
+                "source_record_id": None,
+                "capacity": capacity,
+                "capacity_type": "maximum",
+                "source_url": source_url,
+                "retrieved_at": verified_at,
+            }
+        )
+        updated += 1
+    return updated
+
+
 def _upsert(
     connection: Connection,
     table: Any,
@@ -563,6 +620,7 @@ def run_live_ingestion(
             now,
             provider_errors,
         )
+    capacities_updated += _apply_capacity_overrides(venue_rows, capacity_source_rows, now)
 
     sample_data_removed = False
     with get_connection(db_target) as connection:
