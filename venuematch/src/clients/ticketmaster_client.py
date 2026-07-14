@@ -18,3 +18,11 @@ class TicketmasterClient(BaseAPIClient):
         if city:
             params["city"] = city
         return self.get("/events.json", params=params)
+
+    def search_venues(self, keyword: str, city: str | None = None, size: int = 20) -> dict:
+        if not self.api_key:
+            return {"source": "mock", "venues": []}
+        params = {"apikey": self.api_key, "keyword": keyword, "size": size}
+        if city:
+            params["city"] = city
+        return self.get("/venues.json", params=params)

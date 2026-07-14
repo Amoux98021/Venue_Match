@@ -8,13 +8,21 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src.clients.musicbrainz_client import MusicBrainzClient
-from src.utils.config import PROJECT_ROOT
+from src.utils.config import PROJECT_ROOT, credentials_available
 from src.utils.io import write_json
 
 
 def main() -> None:
     output_path = PROJECT_ROOT / "data" / "raw" / "musicbrainz_artists.json"
     client = MusicBrainzClient()
+    if not credentials_available()["musicbrainz"]:
+        write_json(
+            output_path,
+            {"source": "mock", "artists": [], "note": "Missing MUSICBRAINZ_USER_AGENT"},
+        )
+        print(f"Wrote mock MusicBrainz payload to {output_path}")
+        return
+
     payload = client.search_artist("The District Echoes")
     write_json(output_path, payload)
     print(f"Wrote MusicBrainz payload to {output_path}")

@@ -2,5 +2,9 @@
 .venv/
 __pycache__/
 *.pyc
+.pytest_cache/
 data/raw/*.json
 data/processed/*.db
+web/.env.local
+web/.next/
+web/node_modules/

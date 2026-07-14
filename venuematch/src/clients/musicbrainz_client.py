@@ -9,9 +9,11 @@ class MusicBrainzClient:
     base_url = "https://musicbrainz.org/ws/2"
 
     def __init__(self) -> None:
-        self.user_agent = get_env("MUSICBRAINZ_USER_AGENT", "VenueMatch/0.1 (contact@example.com)")
+        self.user_agent = get_env("MUSICBRAINZ_USER_AGENT")
 
     def search_artist(self, artist_name: str) -> dict:
+        if not self.user_agent:
+            return {"source": "mock", "artists": []}
         response = requests.get(
             f"{self.base_url}/artist",
             params={"query": artist_name, "fmt": "json"},

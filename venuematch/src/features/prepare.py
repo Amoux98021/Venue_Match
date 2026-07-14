@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import pandas as pd
 
 from src.db import repository
+from src.db.database import DatabaseTarget
 
 
-def load_feature_frames(db_path: Path | None = None) -> dict[str, pd.DataFrame]:
+def load_feature_frames(db_path: DatabaseTarget = None) -> dict[str, pd.DataFrame]:
     return {
         "artists": repository.get_artists(db_path),
         "venues": repository.get_venues(db_path),

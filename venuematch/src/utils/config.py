@@ -18,13 +18,16 @@ def get_env(name: str, default: str | None = None) -> str | None:
     return os.getenv(name, default)
 
 
-def get_database_path() -> Path:
+def get_database_url() -> str:
     raw_value = get_env("DATABASE_URL")
     if not raw_value:
-        return DEFAULT_DB_PATH
+        return f"sqlite:///{DEFAULT_DB_PATH}"
     if raw_value.startswith("sqlite:///"):
-        return PROJECT_ROOT / raw_value.replace("sqlite:///", "", 1)
-    return Path(raw_value)
+        sqlite_path = Path(raw_value.replace("sqlite:///", "", 1))
+        if not sqlite_path.is_absolute():
+            sqlite_path = PROJECT_ROOT / sqlite_path
+        return f"sqlite:///{sqlite_path.resolve()}"
+    return raw_value
 
 
 def ensure_data_directories() -> None:

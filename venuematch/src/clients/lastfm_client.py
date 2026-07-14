@@ -23,3 +23,32 @@ class LastFMClient(BaseAPIClient):
                 "format": "json",
             },
         )
+
+    def get_artist_info(self, artist_name: str) -> dict:
+        if not self.api_key:
+            return {"source": "mock", "artist": {}}
+        return self.get(
+            "",
+            params={
+                "method": "artist.getInfo",
+                "artist": artist_name,
+                "autocorrect": 1,
+                "api_key": self.api_key,
+                "format": "json",
+            },
+        )
+
+    def get_metro_top_tracks(self, country: str, location: str, limit: int = 50) -> dict:
+        if not self.api_key:
+            return {"source": "mock", "tracks": {"track": []}}
+        return self.get(
+            "",
+            params={
+                "method": "geo.getTopTracks",
+                "country": country,
+                "location": location,
+                "limit": limit,
+                "api_key": self.api_key,
+                "format": "json",
+            },
+        )

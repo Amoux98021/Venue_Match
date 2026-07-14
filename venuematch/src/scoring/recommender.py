@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
+from math import log10
 
 import pandas as pd
 
+from src.db.database import DatabaseTarget
 from src.db.repository import upsert_recommendations
 from src.features.prepare import load_feature_frames
 
@@ -69,10 +70,16 @@ def _city_genre_signal_map(frames: dict[str, pd.DataFrame]) -> dict[tuple[str, s
     return grouped
 
 
-def _artist_popularity_score(popularity: float | int | None) -> float:
-    if popularity is None or pd.isna(popularity):
-        return 0.5
-    return min(max(float(popularity) / 100.0, 0.0), 1.0)
+def _artist_popularity_score(
+    popularity: float | int | None,
+    monthly_listeners: float | int | None = None,
+) -> float:
+    if popularity is not None and not pd.isna(popularity):
+        return min(max(float(popularity) / 100.0, 0.0), 1.0)
+    if monthly_listeners is not None and not pd.isna(monthly_listeners):
+        # Log scaling keeps independent and emerging artists meaningful.
+        return min(max(log10(max(float(monthly_listeners), 1.0)) / 7.0, 0.0), 1.0)
+    return 0.5
 
 
 def _capacity_fit_score(artist_popularity_score: float, capacity: float | int | None) -> tuple[float, str]:
@@ -87,7 +94,7 @@ def _capacity_fit_score(artist_popularity_score: float, capacity: float | int | 
 def recommend_venues_for_artist(
     artist_name: str,
     target_city: str,
-    db_path: Path | None = None,
+    db_path: DatabaseTarget = None,
     top_n: int = 10,
 ) -> RecommendationResult:
     frames = load_feature_frames(db_path)
@@ -107,7 +114,10 @@ def recommend_venues_for_artist(
     venue_genres = _venue_genre_map(frames)
     venue_history_strength = _venue_history_strength_map(frames)
     city_signals = _city_genre_signal_map(frames)
-    artist_pop_score = _artist_popularity_score(artist.get("popularity"))
+    artist_pop_score = _artist_popularity_score(
+        artist.get("popularity"),
+        artist.get("monthly_listeners"),
+    )
 
     rows: list[dict] = []
     for _, venue in city_venues.iterrows():
@@ -189,7 +199,7 @@ def recommend_venues_for_artist(
 
 def recommend_artists_for_venue(
     venue_name_or_city: str,
-    db_path: Path | None = None,
+    db_path: DatabaseTarget = None,
     top_n: int = 10,
 ) -> RecommendationResult:
     frames = load_feature_frames(db_path)
@@ -210,7 +220,10 @@ def recommend_artists_for_venue(
     rows: list[dict] = []
     for _, artist in artists.iterrows():
         artist_genre_set = _safe_set(artist_genres.get(artist["id"], []))
-        artist_pop_score = _artist_popularity_score(artist.get("popularity"))
+        artist_pop_score = _artist_popularity_score(
+            artist.get("popularity"),
+            artist.get("monthly_listeners"),
+        )
 
         best_result: dict | None = None
         for _, venue in matched_venues.iterrows():

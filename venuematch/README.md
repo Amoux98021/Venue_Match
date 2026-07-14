@@ -1,39 +1,33 @@
 # VenueMatch
 
-VenueMatch is a Python-first MVP that recommends concert venues for artists and artists for venues using a transparent rule-based scoring engine backed by SQLite and a Streamlit demo.
+VenueMatch is an explainable booking-intelligence product that ranks concert venues for artists and artists for venues. It combines genre alignment, historical booking patterns, local demand, room capacity, and artist popularity without scraping private ticket-sales data.
 
-## MVP capabilities
+The production MVP uses a Next.js frontend, a Python FastAPI backend, and either local SQLite or hosted Neon Postgres. Missing API keys automatically activate the bundled sample dataset.
 
-- Artist-to-venue ranking by city
-- Venue-to-artist and city-to-artist discovery
-- Transparent scoring across genre fit, venue history, city demand, capacity fit, and artist popularity
-- Local SQLite database with seed data for Washington DC, Baltimore, Philadelphia, New York, and College Park
-- Modular API client stubs and ingestion scripts for official/public data sources
-- Baseline ML training placeholder for future supervised ranking
-
-## Project structure
+## Architecture
 
 ```text
-venuematch/
-  app.py
-  README.md
-  .env.template
-  requirements.txt
-  data/
-    raw/
-    processed/
-    sample/
-  scripts/
-  src/
-    clients/
-    db/
-    features/
-    models/
-    scoring/
-    utils/
+Next.js web app (Vercel)
+  -> same-origin /api/backend proxy
+FastAPI scoring API (Vercel Python)
+  -> SQLAlchemy
+SQLite locally / Neon Postgres in production
+  -> Ticketmaster, Last.fm, MusicBrainz, Census
 ```
 
-## Setup
+## Features
+
+- Artist-to-venue rankings by target city
+- Venue-or-city-to-artist rankings
+- City dashboard with demographics and genre-demand signals
+- Visible score components and plain-language explanations
+- Whitelisted raw-data previews
+- Automatic sample mode for Washington, Baltimore, Philadelphia, New York, and College Park
+- Postgres-ready relational schema and baseline ML training placeholder
+
+## Local setup
+
+### 1. Backend
 
 ```bash
 cd venuematch
@@ -41,72 +35,52 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.template .env
-streamlit run app.py
+python scripts/init_database.py
+python -m uvicorn app:app --reload --port 8000
 ```
 
-The app runs without API keys by automatically creating and using the bundled mock dataset.
+FastAPI docs are available at `http://127.0.0.1:8000/docs`.
+
+### 2. Frontend
+
+In a second terminal:
+
+```bash
+cd venuematch/web
+cp .env.example .env.local
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000`.
 
 ## Environment variables
 
-- `TICKETMASTER_API_KEY`
-- `SPOTIFY_CLIENT_ID`
-- `SPOTIFY_CLIENT_SECRET`
-- `LASTFM_API_KEY`
-- `MUSICBRAINZ_USER_AGENT`
-- `CENSUS_API_KEY`
-- `JAMBASE_API_KEY` optional
-- `DATABASE_URL` optional, defaults to local SQLite
+Backend `.env`:
 
-## Data sources and safety
+```dotenv
+DATABASE_URL=sqlite:///data/processed/venuematch.db
+TICKETMASTER_API_KEY=
+LASTFM_API_KEY=
+MUSICBRAINZ_USER_AGENT=VenueMatch/1.0 (your-email@example.com)
+CENSUS_API_KEY=
+CENSUS_ACS_YEAR=2024
+SPOTIFY_CLIENT_ID=
+SPOTIFY_CLIENT_SECRET=
+JAMBASE_API_KEY=
+ALLOWED_ORIGINS=http://localhost:3000
+CRON_SECRET=
+```
 
-VenueMatch is designed to use official APIs or public datasets only. No private ticket sales data is scraped or required for this MVP.
+Frontend `web/.env.local`:
 
-- Ticketmaster Discovery API
-- Spotify Web API
-- Last.fm API
-- MusicBrainz API
-- U.S. Census API
+```dotenv
+VENUE_MATCH_API_URL=http://127.0.0.1:8000
+```
 
-## Seed data
+Spotify is optional enrichment. VenueMatch uses Last.fm listeners/play counts and event frequency as its primary popularity signals so Spotify restrictions do not block the product.
 
-If API credentials are unavailable, VenueMatch loads sample records for:
-
-- Washington, DC
-- Baltimore, MD
-- Philadelphia, PA
-- New York, NY
-- College Park, MD
-
-The sample data lives in `data/sample/mock_data.json`.
-
-## Database schema
-
-The SQLite schema includes:
-
-- `artists`
-- `venues`
-- `events`
-- `artist_genres`
-- `city_demographics`
-- `city_genre_signals`
-- `venue_genre_history`
-- `recommendations`
-
-## Ingestion scripts
-
-Scripts live in `scripts/` and can write normalized data into SQLite:
-
-- `ingest_ticketmaster.py`
-- `ingest_spotify.py`
-- `ingest_lastfm.py`
-- `ingest_musicbrainz.py`
-- `ingest_census.py`
-
-Each script supports a safe fallback path when keys are missing so local development is not blocked.
-
-## Rule-based scoring
-
-The recommender uses this weighted formula:
+## Scoring model
 
 ```text
 final_score =
@@ -117,32 +91,63 @@ final_score =
   0.10 * artist_popularity_score
 ```
 
-Genre fit is based on normalized overlap between artist genres, venue history, and city genre signals.
+Genre fit uses normalized overlap between artist tags, venue history, and city signals. Unknown venue capacity receives a neutral-low score and an explicit reduced-confidence explanation.
 
-## ML placeholder
+## API endpoints
 
-`src/models/train_baseline.py` prepares features from historical events and only trains a simple baseline classifier if enough labeled rows exist.
+- `GET /health`
+- `GET /meta/options`
+- `POST /recommendations/artist-to-venue`
+- `POST /recommendations/venue-to-artist`
+- `GET /cities/{city}/dashboard`
+- `GET /raw/{dataset}`
 
-## Demo notes
+## Neon and Vercel deployment
 
-The Streamlit app includes:
+Create two Vercel projects from the same GitHub repository. This avoids relying on Vercel Services private beta.
 
-- Artist-to-venue tab
-- Venue-to-artist tab
-- City dashboard tab
-- Explanation panel
-- Raw data preview
+### Backend project
 
-## Common commands
+1. Import the repository into Vercel.
+2. Set the Root Directory to `venuematch`.
+3. Vercel detects `api/index.py` as a FastAPI Python Function.
+4. Install Neon from Vercel Marketplace and attach it to this project.
+5. Set `DATABASE_URL` to Neon's pooled connection string.
+6. Add the API variables from `.env.template`.
+7. Set `ALLOWED_ORIGINS` to the frontend production URL.
 
-Initialize the local database and seed sample data:
+The backend creates missing tables automatically and loads sample data only when the database is empty.
+
+### Frontend project
+
+1. Import the same repository as a second Vercel project.
+2. Set the Root Directory to `venuematch/web`.
+3. Set `VENUE_MATCH_API_URL` to the backend Vercel URL without a trailing slash.
+4. Deploy using the detected Next.js settings.
+
+All provider keys stay in the backend project. Browser requests pass through the server-side Next.js proxy.
+
+Vercel Hobby is suitable for a personal, non-commercial demo. Review Vercel and provider commercial terms before launching a paid product.
+
+## Data ingestion
+
+The scripts under `scripts/` use official APIs and write raw snapshots under `data/raw/`:
+
+- `ingest_ticketmaster.py`
+- `ingest_lastfm.py`
+- `ingest_musicbrainz.py`
+- `ingest_census.py`
+- `ingest_spotify.py` (optional)
+
+Venue capacity should be curated from official venue sources with a source URL and verification date. Do not scrape private inventory or ticket-sales systems.
+
+## Verification
 
 ```bash
-python scripts/seed_sample_data.py
-```
-
-Run the baseline trainer:
-
-```bash
+python -m pytest
 python src/models/train_baseline.py
+cd web
+npm run lint
+npm run build
+npm audit
 ```
