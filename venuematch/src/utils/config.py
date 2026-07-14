@@ -8,7 +8,9 @@ from dotenv import load_dotenv
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ENV_PATH = PROJECT_ROOT / ".env"
-DEFAULT_DB_PATH = PROJECT_ROOT / "data" / "processed" / "venuematch.db"
+IS_VERCEL = os.getenv("VERCEL") == "1"
+RUNTIME_DATA_ROOT = Path("/tmp/venuematch") if IS_VERCEL else PROJECT_ROOT / "data"
+DEFAULT_DB_PATH = RUNTIME_DATA_ROOT / "processed" / "venuematch.db"
 SAMPLE_DATA_PATH = PROJECT_ROOT / "data" / "sample" / "mock_data.json"
 
 load_dotenv(ENV_PATH, override=False)
@@ -31,8 +33,8 @@ def get_database_url() -> str:
 
 
 def ensure_data_directories() -> None:
-    (PROJECT_ROOT / "data" / "raw").mkdir(parents=True, exist_ok=True)
-    (PROJECT_ROOT / "data" / "processed").mkdir(parents=True, exist_ok=True)
+    (RUNTIME_DATA_ROOT / "raw").mkdir(parents=True, exist_ok=True)
+    (RUNTIME_DATA_ROOT / "processed").mkdir(parents=True, exist_ok=True)
 
 
 def credentials_available() -> dict[str, bool]:
