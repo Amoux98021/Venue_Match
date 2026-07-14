@@ -12,7 +12,7 @@ Next.js web app (Vercel)
 FastAPI scoring API (Vercel Python)
   -> SQLAlchemy
 SQLite locally / Neon Postgres in production
-  -> Ticketmaster, Last.fm, MusicBrainz, Census
+  -> Ticketmaster, Last.fm, MusicBrainz, Census, JamBase
   -> protected daily ingestion cron
 ```
 
@@ -94,8 +94,11 @@ Production exposes `GET /ingestion/sync`, protected by `CRON_SECRET`. Vercel cal
 
 - requests up to 75 upcoming music events for each launch city
 - upserts artists, venues, events, tags, and Census demographics
+- resolves Ticketmaster venue IDs through JamBase and stores maximum capacity with provenance
 - rebuilds city-demand and venue-booking signals from normalized event rows
 - retains one year of Ticketmaster event records and stores no raw API responses
+
+JamBase capacity checks are cached for 30 days to protect the API quota. Capacity values use JamBase's `maximumAttendeeCapacity` field and keep the source record, URL, and retrieval timestamp in `venue_capacity_sources`. JamBase attribution is displayed beside sourced capacities in the recommendation interface.
 
 `GET /ingestion/status` reports table counts, the latest run, and Postgres database size. The Neon Free plan currently allows 0.5 GB per project, so the bounded normalized dataset is intentionally much smaller than the available storage.
 

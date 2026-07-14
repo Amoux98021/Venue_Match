@@ -25,10 +25,13 @@ ADDITIVE_COLUMNS = {
     },
     "venues": {
         "ticketmaster_id": "VARCHAR",
+        "jambase_id": "VARCHAR",
         "latitude": "FLOAT",
         "longitude": "FLOAT",
         "capacity_source_url": "TEXT",
+        "capacity_source": "VARCHAR",
         "capacity_verified_at": "TIMESTAMP",
+        "capacity_checked_at": "TIMESTAMP",
         "data_source": "VARCHAR",
         "updated_at": "TIMESTAMP",
     },

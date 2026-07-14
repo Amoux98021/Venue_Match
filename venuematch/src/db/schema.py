@@ -43,13 +43,28 @@ venues = Table(
     Column("state", String, nullable=False),
     Column("capacity", Integer),
     Column("ticketmaster_id", String),
+    Column("jambase_id", String),
     Column("latitude", Float),
     Column("longitude", Float),
     Column("capacity_source_url", Text),
+    Column("capacity_source", String),
     Column("capacity_verified_at", DateTime(timezone=True)),
+    Column("capacity_checked_at", DateTime(timezone=True)),
     Column("data_source", String),
     Column("updated_at", DateTime(timezone=True), server_default=func.now()),
     UniqueConstraint("name", "city", "state", name="uq_venue_location"),
+)
+
+venue_capacity_sources = Table(
+    "venue_capacity_sources",
+    metadata,
+    Column("venue_id", String, ForeignKey("venues.id"), primary_key=True),
+    Column("source", String, primary_key=True),
+    Column("source_record_id", String),
+    Column("capacity", Integer, nullable=False),
+    Column("capacity_type", String, nullable=False, server_default="maximum"),
+    Column("source_url", Text),
+    Column("retrieved_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
 )
 
 events = Table(
@@ -148,6 +163,7 @@ TABLES = {
     for table in (
         artists,
         venues,
+        venue_capacity_sources,
         events,
         artist_genres,
         city_demographics,

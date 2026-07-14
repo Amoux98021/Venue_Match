@@ -51,7 +51,13 @@ export function RecommendationList({ results }: { results: Result[] }) {
 
               <div className="result-facts">
                 {venueResult ? (
-                  <span><UsersRound size={15} /> {result.capacity ? `${result.capacity.toLocaleString()} cap` : "Capacity unverified"}</span>
+                  <span>
+                    <UsersRound size={15} />
+                    {result.capacity ? `${result.capacity.toLocaleString()} cap` : "Capacity unverified"}
+                    {result.capacity_source === "jambase" && result.capacity_source_url ? (
+                      <a href={result.capacity_source_url} target="_blank" rel="noreferrer">Data: JamBase</a>
+                    ) : null}
+                  </span>
                 ) : (
                   <span><Sparkles size={15} /> {result.genres || "Genre data pending"}</span>
                 )}

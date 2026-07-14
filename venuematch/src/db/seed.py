@@ -10,6 +10,7 @@ from src.db.schema import (
     city_genre_signals,
     events,
     recommendations,
+    venue_capacity_sources,
     venue_genre_history,
     venues,
 )
@@ -21,6 +22,7 @@ DELETE_ORDER = (
     recommendations,
     events,
     artist_genres,
+    venue_capacity_sources,
     venue_genre_history,
     city_genre_signals,
     city_demographics,

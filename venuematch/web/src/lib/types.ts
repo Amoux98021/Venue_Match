@@ -14,6 +14,8 @@ export interface VenueOption {
   city: string;
   state: string;
   capacity: number | null;
+  capacity_source?: string | null;
+  capacity_source_url?: string | null;
 }
 
 export interface OptionsResponse {
@@ -42,6 +44,9 @@ export interface ArtistVenueResult extends ScoreRecord {
   city: string;
   state: string;
   capacity: number | null;
+  capacity_source: string | null;
+  capacity_source_url: string | null;
+  capacity_verified_at: string | null;
 }
 
 export interface VenueArtistResult extends ScoreRecord {
@@ -53,6 +58,9 @@ export interface VenueArtistResult extends ScoreRecord {
   city: string;
   state: string;
   genres: string;
+  capacity?: number | null;
+  capacity_source?: string | null;
+  capacity_source_url?: string | null;
 }
 
 export interface RecommendationResponse<T extends ScoreRecord> {

@@ -14,6 +14,7 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.engine import Connection
 
 from src.clients.census_client import CensusClient
+from src.clients.jambase_client import JamBaseClient
 from src.clients.lastfm_client import LastFMClient
 from src.clients.musicbrainz_client import MusicBrainzClient
 from src.clients.ticketmaster_client import TicketmasterClient
@@ -27,6 +28,7 @@ from src.db.schema import (
     events,
     ingestion_runs,
     recommendations,
+    venue_capacity_sources,
     venue_genre_history,
     venues,
 )
@@ -55,6 +57,8 @@ EVENT_RETENTION_DAYS = 365
 EVENTS_PER_CITY = 75
 LASTFM_ARTISTS_PER_RUN = 8
 MUSICBRAINZ_ARTISTS_PER_RUN = 3
+JAMBASE_CAPACITY_RECHECK_DAYS = 30
+JAMBASE_VENUES_PER_RUN = 60
 
 
 @dataclass
@@ -63,6 +67,7 @@ class IngestionClients:
     lastfm: Any
     musicbrainz: Any
     census: Any
+    jambase: Any
 
 
 @dataclass
@@ -73,6 +78,8 @@ class IngestionResult:
     events_upserted: int
     cities_updated: int
     artist_genres_upserted: int
+    jambase_venues_checked: int
+    capacities_updated: int
     provider_errors: list[str]
     sample_data_removed: bool
     started_at: str
@@ -85,6 +92,7 @@ def _default_clients() -> IngestionClients:
         lastfm=LastFMClient(),
         musicbrainz=MusicBrainzClient(),
         census=CensusClient(),
+        jambase=JamBaseClient(),
     )
 
 
@@ -182,8 +190,13 @@ def _parse_ticketmaster_events(
             "state": state,
             "capacity": None,
             "ticketmaster_id": source_venue.get("id"),
+            "jambase_id": None,
             "latitude": _number(location.get("latitude"), float),
             "longitude": _number(location.get("longitude"), float),
+            "capacity_source_url": None,
+            "capacity_source": None,
+            "capacity_verified_at": None,
+            "capacity_checked_at": None,
             "data_source": "ticketmaster",
             "updated_at": now,
         }
@@ -291,6 +304,91 @@ def _census_row(payload: Any, target: CityTarget, now: datetime) -> dict[str, An
         "data_source": "census_acs5",
         "updated_at": now,
     }
+
+
+def _capacity_candidates(
+    venue_rows: dict[str, dict[str, Any]],
+    db_target: DatabaseTarget,
+    now: datetime,
+) -> list[dict[str, Any]]:
+    with get_connection(db_target) as connection:
+        existing = {
+            row["id"]: row
+            for row in connection.execute(
+                select(
+                    venues.c.id,
+                    venues.c.capacity,
+                    venues.c.capacity_checked_at,
+                ).where(venues.c.id.in_(venue_rows))
+            ).mappings()
+        }
+
+    cutoff = now - timedelta(days=JAMBASE_CAPACITY_RECHECK_DAYS)
+    candidates: list[dict[str, Any]] = []
+    for venue in venue_rows.values():
+        current = existing.get(venue["id"])
+        checked_at = current.get("capacity_checked_at") if current else None
+        if checked_at and checked_at.tzinfo is None:
+            checked_at = checked_at.replace(tzinfo=timezone.utc)
+        if checked_at and checked_at >= cutoff:
+            continue
+        candidates.append(venue)
+    return candidates[:JAMBASE_VENUES_PER_RUN]
+
+
+def _enrich_jambase_capacities(
+    venue_rows: dict[str, dict[str, Any]],
+    db_target: DatabaseTarget,
+    client: Any,
+    now: datetime,
+    errors: list[str],
+) -> tuple[list[dict[str, Any]], int, int]:
+    source_rows: list[dict[str, Any]] = []
+    checked = 0
+    updated = 0
+    for venue in _capacity_candidates(venue_rows, db_target, now):
+        ticketmaster_id = venue.get("ticketmaster_id")
+        if not ticketmaster_id:
+            continue
+        try:
+            payload = client.get_venue_by_external_id("ticketmaster", ticketmaster_id)
+            checked += 1
+            venue["capacity_checked_at"] = now
+            jambase_venue = payload.get("venue") or {}
+            capacity = _number(jambase_venue.get("maximumAttendeeCapacity"), int)
+            if capacity is None or capacity <= 0:
+                continue
+
+            jambase_id = jambase_venue.get("identifier")
+            source_url = jambase_venue.get("url")
+            venue.update(
+                {
+                    "capacity": capacity,
+                    "jambase_id": jambase_id,
+                    "capacity_source_url": source_url,
+                    "capacity_source": "jambase",
+                    "capacity_verified_at": now,
+                    "data_source": _source_list(venue.get("data_source"), "jambase"),
+                }
+            )
+            source_rows.append(
+                {
+                    "venue_id": venue["id"],
+                    "source": "jambase",
+                    "source_record_id": jambase_id,
+                    "capacity": capacity,
+                    "capacity_type": "maximum",
+                    "source_url": source_url,
+                    "retrieved_at": now,
+                }
+            )
+            updated += 1
+        except Exception as error:
+            errors.append(_safe_provider_error("jambase", error))
+            status_code = getattr(getattr(error, "response", None), "status_code", None)
+            if status_code in {401, 403, 429}:
+                break
+    return source_rows, checked, updated
 
 
 def _upsert(
@@ -410,6 +508,9 @@ def run_live_ingestion(
     event_rows: dict[str, dict[str, Any]] = {}
     genre_rows: set[tuple[str, str]] = set()
     census_rows: list[dict[str, Any]] = []
+    capacity_source_rows: list[dict[str, Any]] = []
+    jambase_venues_checked = 0
+    capacities_updated = 0
 
     start_date = now.strftime("%Y-%m-%dT%H:%M:%SZ")
     end_date = (now + timedelta(days=EVENT_LOOKAHEAD_DAYS)).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -450,6 +551,18 @@ def run_live_ingestion(
         _enrich_lastfm(artist_rows, genre_rows, clients.lastfm, provider_errors)
     if available["musicbrainz"] or provided_clients:
         _enrich_musicbrainz(artist_rows, clients.musicbrainz, provider_errors)
+    if available["jambase"] or provided_clients:
+        (
+            capacity_source_rows,
+            jambase_venues_checked,
+            capacities_updated,
+        ) = _enrich_jambase_capacities(
+            venue_rows,
+            db_target,
+            clients.jambase,
+            now,
+            provider_errors,
+        )
 
     sample_data_removed = False
     with get_connection(db_target) as connection:
@@ -490,12 +603,32 @@ def run_live_ingestion(
                 "state",
                 "capacity",
                 "ticketmaster_id",
+                "jambase_id",
                 "latitude",
                 "longitude",
+                "capacity_source_url",
+                "capacity_source",
+                "capacity_verified_at",
+                "capacity_checked_at",
                 "data_source",
                 "updated_at",
             ],
-            preserve_existing_on_null=["capacity", "latitude", "longitude"],
+            preserve_existing_on_null=[
+                "capacity",
+                "jambase_id",
+                "latitude",
+                "longitude",
+                "capacity_source_url",
+                "capacity_source",
+                "capacity_verified_at",
+                "capacity_checked_at",
+            ],
+        )
+        _upsert(
+            connection,
+            venue_capacity_sources,
+            capacity_source_rows,
+            ["venue_id", "source"],
         )
         _upsert(connection, artist_genres, [
             {"artist_id": artist_id, "genre": genre} for artist_id, genre in sorted(genre_rows)
@@ -517,6 +650,8 @@ def run_live_ingestion(
             events_upserted=len(event_rows),
             cities_updated=len(census_rows),
             artist_genres_upserted=len(genre_rows),
+            jambase_venues_checked=jambase_venues_checked,
+            capacities_updated=capacities_updated,
             provider_errors=sorted(set(provider_errors)),
             sample_data_removed=sample_data_removed,
             started_at=started_at.isoformat(),
@@ -533,6 +668,8 @@ def run_live_ingestion(
                 cities_updated=result.cities_updated,
                 details=json.dumps({
                     "artist_genres_upserted": result.artist_genres_upserted,
+                    "jambase_venues_checked": result.jambase_venues_checked,
+                    "capacities_updated": result.capacities_updated,
                     "provider_errors": result.provider_errors,
                     "sample_data_removed": result.sample_data_removed,
                 }),

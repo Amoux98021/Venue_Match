@@ -52,6 +52,13 @@ def get_venue_genre_history(db_target: DatabaseTarget = None) -> pd.DataFrame:
     )
 
 
+def get_venue_capacity_sources(db_target: DatabaseTarget = None) -> pd.DataFrame:
+    return fetch_dataframe(
+        "SELECT * FROM venue_capacity_sources ORDER BY venue_id, source",
+        db_target=db_target,
+    )
+
+
 def get_city_demographics(db_target: DatabaseTarget = None) -> pd.DataFrame:
     return fetch_dataframe("SELECT * FROM city_demographics ORDER BY state, city", db_target=db_target)
 

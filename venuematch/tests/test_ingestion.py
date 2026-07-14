@@ -3,6 +3,7 @@ from pathlib import Path
 from src.db import repository
 from src.db.seed import seed_sample_data
 from src.ingestion.service import IngestionClients, get_ingestion_status, run_live_ingestion
+from src.scoring.recommender import recommend_venues_for_artist
 
 
 class FakeTicketmaster:
@@ -74,12 +75,24 @@ class FakeCensus:
         ]
 
 
+class FakeJamBase:
+    def get_venue_by_external_id(self, source, external_id):
+        return {
+            "venue": {
+                "identifier": f"jambase:{external_id}",
+                "url": f"https://www.jambase.com/venue/{external_id}",
+                "maximumAttendeeCapacity": 1750,
+            }
+        }
+
+
 def _clients(ticketmaster=None):
     return IngestionClients(
         ticketmaster=ticketmaster or FakeTicketmaster(),
         lastfm=FakeLastFM(),
         musicbrainz=FakeMusicBrainz(),
         census=FakeCensus(),
+        jambase=FakeJamBase(),
     )
 
 
@@ -92,12 +105,21 @@ def test_live_ingestion_replaces_sample_data_and_is_idempotent(tmp_path: Path) -
 
     assert first.sample_data_removed is True
     assert second.sample_data_removed is False
+    assert first.capacities_updated == 5
+    assert second.jambase_venues_checked == 0
     assert set(repository.get_artists(database_path)["data_source"]) != {"sample"}
     assert len(repository.get_events(database_path)) == 5
     assert len(repository.get_venues(database_path)) == 5
+    assert set(repository.get_venues(database_path)["capacity"]) == {1750}
+    assert len(repository.get_venue_capacity_sources(database_path)) == 5
     assert len(repository.get_city_demographics(database_path)) == 5
     assert not repository.get_city_genre_signals(database_path).empty
     assert not repository.get_venue_genre_history(database_path).empty
+    recommendation = recommend_venues_for_artist(
+        "Washington Live Artist", "Washington", db_path=database_path, top_n=1
+    ).ranked.iloc[0]
+    assert recommendation["capacity"] == 1750
+    assert recommendation["capacity_source"] == "jambase"
     assert get_ingestion_status(database_path)["counts"]["ingestion_runs"] == 2
 
 

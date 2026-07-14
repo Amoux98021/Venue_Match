@@ -171,6 +171,7 @@ RAW_DATASETS: dict[str, Callable[[], pd.DataFrame]] = {
     "city_demographics": repository.get_city_demographics,
     "city_genre_signals": repository.get_city_genre_signals,
     "venue_genre_history": repository.get_venue_genre_history,
+    "venue_capacity_sources": repository.get_venue_capacity_sources,
     "recommendations": repository.get_recommendations,
     "ingestion_runs": repository.get_ingestion_runs,
 }
