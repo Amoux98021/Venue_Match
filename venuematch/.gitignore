@@ -8,3 +8,4 @@ data/processed/*.db
 web/.env.local
 web/.next/
 web/node_modules/
+.vercel
