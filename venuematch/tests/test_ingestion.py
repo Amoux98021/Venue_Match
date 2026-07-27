@@ -201,7 +201,18 @@ def test_jambase_history_backfill_is_resumable(tmp_path: Path) -> None:
 
     assert first.venues_checked == 2
     assert second.venues_checked == 2
+    assert first.mode == "historical"
     assert first.remaining_venues == 3
     assert second.remaining_venues == 1
     assert len(repository.get_events(database_path)) == 9
     assert "indie rock" in repository.get_artist_genres(database_path)["genre"].tolist()
+
+    future = run_jambase_history_backfill(
+        database_path,
+        client=FakeJamBase(),
+        batch_size=1,
+        include_history=False,
+    )
+    assert future.mode == "future"
+    assert future.venues_checked == 1
+    assert repository.get_venues(database_path)["jambase_future_checked_at"].notna().sum() == 1

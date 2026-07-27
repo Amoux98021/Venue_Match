@@ -94,6 +94,7 @@ class IngestionResult:
 @dataclass
 class JamBaseHistoryResult:
     status: str
+    mode: str
     venues_checked: int
     artists_upserted: int
     events_upserted: int
@@ -217,6 +218,7 @@ def _parse_ticketmaster_events(
             "capacity_verified_at": None,
             "capacity_checked_at": None,
             "jambase_history_checked_at": None,
+            "jambase_future_checked_at": None,
             "data_source": "ticketmaster",
             "updated_at": now,
         }
@@ -658,6 +660,7 @@ def run_jambase_history_backfill(
     db_target: DatabaseTarget = None,
     client: Any | None = None,
     batch_size: int = JAMBASE_HISTORY_BATCH_SIZE,
+    include_history: bool = True,
 ) -> JamBaseHistoryResult:
     initialize_database(db_target)
     if client is None and not credentials_available()["jambase"]:
@@ -667,13 +670,18 @@ def run_jambase_history_backfill(
     now = started_at
     client = client or JamBaseClient(db_target=db_target)
     bounded_batch_size = min(max(batch_size, 1), 25)
+    checked_column = (
+        venues.c.jambase_history_checked_at
+        if include_history
+        else venues.c.jambase_future_checked_at
+    )
     with get_connection(db_target) as connection:
         candidates = [
             dict(row)
             for row in connection.execute(
                 select(venues).where(
                     venues.c.jambase_id.is_not(None),
-                    venues.c.jambase_history_checked_at.is_(None),
+                    checked_column.is_(None),
                 )
                 .order_by(venues.c.city, venues.c.name)
                 .limit(bounded_batch_size)
@@ -685,8 +693,12 @@ def run_jambase_history_backfill(
     genre_pairs: set[tuple[str, str]] = set()
     provider_errors: list[str] = []
     venues_checked = 0
-    event_date_from = (date.today() - timedelta(days=JAMBASE_HISTORY_DAYS)).isoformat()
-    event_date_to = date.today().isoformat()
+    if include_history:
+        event_date_from = (date.today() - timedelta(days=JAMBASE_HISTORY_DAYS)).isoformat()
+        event_date_to = date.today().isoformat()
+    else:
+        event_date_from = date.today().isoformat()
+        event_date_to = (date.today() + timedelta(days=EVENT_LOOKAHEAD_DAYS)).isoformat()
 
     for venue in candidates:
         try:
@@ -696,7 +708,7 @@ def run_jambase_history_backfill(
                 event_date_to=event_date_to,
                 page=1,
                 per_page=100,
-                expand_past_events=True,
+                expand_past_events=include_history,
             )
             parsed_artists, parsed_events, parsed_genres = _parse_jambase_events(
                 payload, venue, now
@@ -724,7 +736,7 @@ def run_jambase_history_backfill(
                 connection.execute(
                     update(venues)
                     .where(venues.c.id == venue["id"])
-                    .values(jambase_history_checked_at=now, updated_at=now)
+                    .values({checked_column.name: now, "updated_at": now})
                 )
             artist_ids.update(parsed_artists)
             event_ids.update(parsed_events)
@@ -744,7 +756,7 @@ def run_jambase_history_backfill(
             connection.scalar(
                 select(func.count()).select_from(venues).where(
                     venues.c.jambase_id.is_not(None),
-                    venues.c.jambase_history_checked_at.is_(None),
+                    checked_column.is_(None),
                 )
             )
             or 0
@@ -753,6 +765,7 @@ def run_jambase_history_backfill(
     completed_at = datetime.now(timezone.utc)
     return JamBaseHistoryResult(
         status="ok" if not provider_errors else "partial",
+        mode="historical" if include_history else "future",
         venues_checked=venues_checked,
         artists_upserted=len(artist_ids),
         events_upserted=len(event_ids),
@@ -890,6 +903,7 @@ def run_live_ingestion(
                 "capacity_verified_at",
                 "capacity_checked_at",
                 "jambase_history_checked_at",
+                "jambase_future_checked_at",
                 "data_source",
                 "updated_at",
             ],
@@ -903,6 +917,7 @@ def run_live_ingestion(
                 "capacity_verified_at",
                 "capacity_checked_at",
                 "jambase_history_checked_at",
+                "jambase_future_checked_at",
             ],
         )
         _upsert(

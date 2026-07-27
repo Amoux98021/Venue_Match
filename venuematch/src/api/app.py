@@ -223,10 +223,16 @@ def ingestion_sync(authorization: Optional[str] = Header(default=None)) -> dict[
 def jambase_history_backfill(
     authorization: Optional[str] = Header(default=None),
     batch_size: int = Query(default=10, ge=1, le=25),
+    include_history: bool = Query(default=True),
 ) -> dict[str, Any]:
     _require_cron_secret(authorization)
     try:
-        return asdict(run_jambase_history_backfill(batch_size=batch_size))
+        return asdict(
+            run_jambase_history_backfill(
+                batch_size=batch_size,
+                include_history=include_history,
+            )
+        )
     except RuntimeError as error:
         raise HTTPException(
             status_code=503,

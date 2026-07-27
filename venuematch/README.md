@@ -101,7 +101,7 @@ Production exposes `GET /ingestion/sync`, protected by `CRON_SECRET`. Vercel cal
 
 Every JamBase request first reserves a call in `provider_api_usage`. VenueMatch enforces a maximum application budget of 950 calls per UTC calendar month, leaving a 50-call safety buffer below the Developer plan's 1,000-call quota. Once the budget is exhausted, the client raises a local error before contacting JamBase. Calls made outside VenueMatch are not visible to this ledger, so the JamBase dashboard remains the source of truth.
 
-The protected `GET /ingestion/jambase-history?batch_size=10` endpoint is a resumable, one-time trial backfill. It requests one year of historical events for venues already matched to JamBase, stores up to 100 events per venue, and marks each completed venue so retries do not spend duplicate calls. Historical access is unavailable after moving to the Developer plan.
+The protected `GET /ingestion/jambase-history?batch_size=10` endpoint is a resumable, one-time trial backfill. It requests one year of historical events for venues already matched to JamBase, stores up to 100 events per venue, and marks each completed venue so retries do not spend duplicate calls. Historical access is unavailable after moving to the Developer plan. Use `include_history=false` to run the same bounded catalog expansion against the Developer plan's six-month future-event window; future and historical progress are tracked separately.
 
 `GET /ingestion/status` reports table counts, the latest run, JamBase usage/remaining budget, and Postgres database size. The Neon Free plan currently allows 0.5 GB per project, so the bounded normalized dataset is intentionally much smaller than the available storage.
 

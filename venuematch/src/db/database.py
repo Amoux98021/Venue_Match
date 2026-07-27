@@ -34,6 +34,7 @@ ADDITIVE_COLUMNS = {
         "capacity_verified_at": "TIMESTAMP",
         "capacity_checked_at": "TIMESTAMP",
         "jambase_history_checked_at": "TIMESTAMP",
+        "jambase_future_checked_at": "TIMESTAMP",
         "data_source": "VARCHAR",
         "updated_at": "TIMESTAMP",
     },

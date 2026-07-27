@@ -52,6 +52,7 @@ venues = Table(
     Column("capacity_verified_at", DateTime(timezone=True)),
     Column("capacity_checked_at", DateTime(timezone=True)),
     Column("jambase_history_checked_at", DateTime(timezone=True)),
+    Column("jambase_future_checked_at", DateTime(timezone=True)),
     Column("data_source", String),
     Column("updated_at", DateTime(timezone=True), server_default=func.now()),
     UniqueConstraint("name", "city", "state", name="uq_venue_location"),
