@@ -19,6 +19,7 @@ ADDITIVE_COLUMNS = {
         "lastfm_listeners": "FLOAT",
         "musicbrainz_id": "VARCHAR",
         "ticketmaster_id": "VARCHAR",
+        "jambase_id": "VARCHAR",
         "lastfm_url": "TEXT",
         "data_source": "VARCHAR",
         "updated_at": "TIMESTAMP",
@@ -32,12 +33,14 @@ ADDITIVE_COLUMNS = {
         "capacity_source": "VARCHAR",
         "capacity_verified_at": "TIMESTAMP",
         "capacity_checked_at": "TIMESTAMP",
+        "jambase_history_checked_at": "TIMESTAMP",
         "data_source": "VARCHAR",
         "updated_at": "TIMESTAMP",
     },
     "events": {
         "source": "VARCHAR",
         "external_id": "VARCHAR",
+        "source_url": "TEXT",
         "updated_at": "TIMESTAMP",
     },
     "city_demographics": {

@@ -8,7 +8,7 @@ from math import log10
 from typing import Any
 from uuid import NAMESPACE_URL, uuid5
 
-from sqlalchemy import delete, func, insert, select, text
+from sqlalchemy import delete, func, insert, select, text, update
 from sqlalchemy.dialects.postgresql import insert as postgresql_insert
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.engine import Connection
@@ -33,6 +33,7 @@ from src.db.schema import (
     venues,
 )
 from src.db.seed import DELETE_ORDER
+from src.utils.api_quota import ProviderQuotaExceeded, get_provider_usage
 from src.utils.config import PROJECT_ROOT, credentials_available
 from src.utils.io import read_json
 
@@ -59,7 +60,9 @@ EVENTS_PER_CITY = 75
 LASTFM_ARTISTS_PER_RUN = 8
 MUSICBRAINZ_ARTISTS_PER_RUN = 3
 JAMBASE_CAPACITY_RECHECK_DAYS = 30
-JAMBASE_VENUES_PER_RUN = 40
+JAMBASE_VENUES_PER_RUN = 5
+JAMBASE_HISTORY_BATCH_SIZE = 10
+JAMBASE_HISTORY_DAYS = 365
 CAPACITY_OVERRIDE_PATH = PROJECT_ROOT / "data" / "manual" / "venue_capacity_overrides.json"
 
 
@@ -88,13 +91,27 @@ class IngestionResult:
     completed_at: str
 
 
-def _default_clients() -> IngestionClients:
+@dataclass
+class JamBaseHistoryResult:
+    status: str
+    venues_checked: int
+    artists_upserted: int
+    events_upserted: int
+    artist_genres_upserted: int
+    remaining_venues: int
+    provider_errors: list[str]
+    provider_usage: list[dict[str, Any]]
+    started_at: str
+    completed_at: str
+
+
+def _default_clients(db_target: DatabaseTarget = None) -> IngestionClients:
     return IngestionClients(
         ticketmaster=TicketmasterClient(),
         lastfm=LastFMClient(),
         musicbrainz=MusicBrainzClient(),
         census=CensusClient(),
-        jambase=JamBaseClient(),
+        jambase=JamBaseClient(db_target=db_target),
     )
 
 
@@ -199,6 +216,7 @@ def _parse_ticketmaster_events(
             "capacity_source": None,
             "capacity_verified_at": None,
             "capacity_checked_at": None,
+            "jambase_history_checked_at": None,
             "data_source": "ticketmaster",
             "updated_at": now,
         }
@@ -222,6 +240,7 @@ def _parse_ticketmaster_events(
                 "home_state": None,
                 "musicbrainz_id": None,
                 "ticketmaster_id": attraction.get("id"),
+                "jambase_id": None,
                 "lastfm_url": None,
                 "data_source": "ticketmaster",
                 "updated_at": now,
@@ -243,6 +262,7 @@ def _parse_ticketmaster_events(
                 "outcome_label": None,
                 "source": "ticketmaster",
                 "external_id": event_id,
+                "source_url": event.get("url"),
                 "updated_at": now,
             }
 
@@ -329,6 +349,8 @@ def _capacity_candidates(
     candidates: list[dict[str, Any]] = []
     for venue in venue_rows.values():
         current = existing.get(venue["id"])
+        if current and current.get("capacity"):
+            continue
         checked_at = current.get("capacity_checked_at") if current else None
         if checked_at and checked_at.tzinfo is None:
             checked_at = checked_at.replace(tzinfo=timezone.utc)
@@ -387,6 +409,8 @@ def _enrich_jambase_capacities(
             updated += 1
         except Exception as error:
             errors.append(_safe_provider_error("jambase", error))
+            if isinstance(error, ProviderQuotaExceeded):
+                break
             status_code = getattr(getattr(error, "response", None), "status_code", None)
             if status_code in {401, 403, 429}:
                 break
@@ -517,7 +541,7 @@ def _refresh_genre_aggregates(connection: Connection, now: datetime) -> None:
                 "venue_id": venue_id,
                 "genre": genre,
                 "event_count": count,
-                "data_source": "ticketmaster_bookings",
+                "data_source": "live_event_frequency",
                 "updated_at": now,
             }
             for (venue_id, genre), count in venue_counts.items()
@@ -537,12 +561,207 @@ def _refresh_genre_aggregates(connection: Connection, now: datetime) -> None:
                 "state": state,
                 "genre": genre,
                 "signal_strength": count / city_max[(city, state)],
-                "data_source": "ticketmaster_event_frequency",
+                "data_source": "live_event_frequency",
                 "updated_at": now,
             }
             for (city, state, genre), count in city_counts.items()
         ],
         ["city", "state", "genre"],
+    )
+
+
+def _jambase_genres(payload: dict[str, Any]) -> set[str]:
+    genres: set[str] = set()
+    for key in ("genre", "genres"):
+        values = payload.get(key) or []
+        if isinstance(values, (str, dict)):
+            values = [values]
+        for value in values:
+            genre = _clean_genre(value.get("name") if isinstance(value, dict) else value)
+            if genre:
+                genres.add(genre)
+    return genres
+
+
+def _parse_jambase_events(
+    payload: dict[str, Any],
+    venue: dict[str, Any],
+    now: datetime,
+) -> tuple[dict[str, dict[str, Any]], dict[str, dict[str, Any]], set[tuple[str, str]]]:
+    artist_rows: dict[str, dict[str, Any]] = {}
+    event_rows: dict[str, dict[str, Any]] = {}
+    genre_rows: set[tuple[str, str]] = set()
+
+    for event in payload.get("events", []) or []:
+        event_id = event.get("identifier")
+        performers = event.get("performer") or []
+        if isinstance(performers, dict):
+            performers = [performers]
+        if not event_id or not performers:
+            continue
+
+        event_genres = _jambase_genres(event)
+        event_date_value = event.get("startDate")
+        event_date = str(event_date_value)[:10] if event_date_value else None
+        source_url = event.get("url")
+
+        for performer in performers:
+            if not isinstance(performer, dict):
+                continue
+            artist_name = performer.get("name")
+            if not artist_name:
+                continue
+            artist_id = _stable_id("artist", artist_name)
+            jambase_id = performer.get("identifier")
+            artist_rows[artist_id] = {
+                "id": artist_id,
+                "name": artist_name,
+                "popularity": None,
+                "monthly_listeners": None,
+                "lastfm_listeners": None,
+                "home_city": None,
+                "home_state": None,
+                "musicbrainz_id": None,
+                "ticketmaster_id": None,
+                "jambase_id": jambase_id,
+                "lastfm_url": None,
+                "data_source": "jambase",
+                "updated_at": now,
+            }
+            performer_genres = _jambase_genres(performer)
+            artist_event_genres = performer_genres or event_genres
+            for genre in artist_event_genres:
+                genre_rows.add((artist_id, genre))
+
+            primary_genre = sorted(artist_event_genres)[0] if artist_event_genres else None
+            row_id = _stable_id("event", "jambase", str(event_id), artist_id)
+            event_rows[row_id] = {
+                "id": row_id,
+                "artist_id": artist_id,
+                "venue_id": venue["id"],
+                "event_date": event_date,
+                "city": venue["city"],
+                "state": venue["state"],
+                "genre": primary_genre,
+                "attendance_estimate": None,
+                "outcome_label": None,
+                "source": "jambase",
+                "external_id": event_id,
+                "source_url": source_url,
+                "updated_at": now,
+            }
+
+    return artist_rows, event_rows, genre_rows
+
+
+def run_jambase_history_backfill(
+    db_target: DatabaseTarget = None,
+    client: Any | None = None,
+    batch_size: int = JAMBASE_HISTORY_BATCH_SIZE,
+) -> JamBaseHistoryResult:
+    initialize_database(db_target)
+    if client is None and not credentials_available()["jambase"]:
+        raise RuntimeError("JamBase credentials are required for the history backfill")
+
+    started_at = datetime.now(timezone.utc)
+    now = started_at
+    client = client or JamBaseClient(db_target=db_target)
+    bounded_batch_size = min(max(batch_size, 1), 25)
+    with get_connection(db_target) as connection:
+        candidates = [
+            dict(row)
+            for row in connection.execute(
+                select(venues).where(
+                    venues.c.jambase_id.is_not(None),
+                    venues.c.jambase_history_checked_at.is_(None),
+                )
+                .order_by(venues.c.city, venues.c.name)
+                .limit(bounded_batch_size)
+            ).mappings()
+        ]
+
+    artist_ids: set[str] = set()
+    event_ids: set[str] = set()
+    genre_pairs: set[tuple[str, str]] = set()
+    provider_errors: list[str] = []
+    venues_checked = 0
+    event_date_from = (date.today() - timedelta(days=JAMBASE_HISTORY_DAYS)).isoformat()
+    event_date_to = date.today().isoformat()
+
+    for venue in candidates:
+        try:
+            payload = client.search_events(
+                venue_id=venue["jambase_id"],
+                event_date_from=event_date_from,
+                event_date_to=event_date_to,
+                page=1,
+                per_page=100,
+                expand_past_events=True,
+            )
+            parsed_artists, parsed_events, parsed_genres = _parse_jambase_events(
+                payload, venue, now
+            )
+            with get_connection(db_target) as connection:
+                _upsert(
+                    connection,
+                    artists,
+                    list(parsed_artists.values()),
+                    ["id"],
+                    update_columns=["jambase_id", "updated_at"],
+                    preserve_existing_on_null=["jambase_id"],
+                )
+                _upsert(
+                    connection,
+                    artist_genres,
+                    [
+                        {"artist_id": artist_id, "genre": genre}
+                        for artist_id, genre in sorted(parsed_genres)
+                    ],
+                    ["artist_id", "genre"],
+                    update_columns=[],
+                )
+                _upsert(connection, events, list(parsed_events.values()), ["id"])
+                connection.execute(
+                    update(venues)
+                    .where(venues.c.id == venue["id"])
+                    .values(jambase_history_checked_at=now, updated_at=now)
+                )
+            artist_ids.update(parsed_artists)
+            event_ids.update(parsed_events)
+            genre_pairs.update(parsed_genres)
+            venues_checked += 1
+        except Exception as error:
+            provider_errors.append(_safe_provider_error("jambase", error))
+            if isinstance(error, ProviderQuotaExceeded):
+                break
+            status_code = getattr(getattr(error, "response", None), "status_code", None)
+            if status_code in {400, 401, 403, 429}:
+                break
+
+    with get_connection(db_target) as connection:
+        _refresh_genre_aggregates(connection, datetime.now(timezone.utc))
+        remaining_venues = int(
+            connection.scalar(
+                select(func.count()).select_from(venues).where(
+                    venues.c.jambase_id.is_not(None),
+                    venues.c.jambase_history_checked_at.is_(None),
+                )
+            )
+            or 0
+        )
+
+    completed_at = datetime.now(timezone.utc)
+    return JamBaseHistoryResult(
+        status="ok" if not provider_errors else "partial",
+        venues_checked=venues_checked,
+        artists_upserted=len(artist_ids),
+        events_upserted=len(event_ids),
+        artist_genres_upserted=len(genre_pairs),
+        remaining_venues=remaining_venues,
+        provider_errors=sorted(set(provider_errors)),
+        provider_usage=get_provider_usage(db_target),
+        started_at=started_at.isoformat(),
+        completed_at=completed_at.isoformat(),
     )
 
 
@@ -558,7 +777,7 @@ def run_live_ingestion(
 
     started_at = datetime.now(timezone.utc)
     now = started_at
-    clients = clients or _default_clients()
+    clients = clients or _default_clients(db_target)
     provider_errors: list[str] = []
     artist_rows: dict[str, dict[str, Any]] = {}
     venue_rows: dict[str, dict[str, Any]] = {}
@@ -640,6 +859,7 @@ def run_live_ingestion(
                 "lastfm_listeners",
                 "musicbrainz_id",
                 "ticketmaster_id",
+                "jambase_id",
                 "lastfm_url",
                 "updated_at",
             ],
@@ -647,6 +867,7 @@ def run_live_ingestion(
                 "popularity",
                 "lastfm_listeners",
                 "musicbrainz_id",
+                "jambase_id",
                 "lastfm_url",
             ],
         )
@@ -668,6 +889,7 @@ def run_live_ingestion(
                 "capacity_source",
                 "capacity_verified_at",
                 "capacity_checked_at",
+                "jambase_history_checked_at",
                 "data_source",
                 "updated_at",
             ],
@@ -680,6 +902,7 @@ def run_live_ingestion(
                 "capacity_source",
                 "capacity_verified_at",
                 "capacity_checked_at",
+                "jambase_history_checked_at",
             ],
         )
         _upsert(
@@ -753,4 +976,5 @@ def get_ingestion_status(db_target: DatabaseTarget = None) -> dict[str, Any]:
         "counts": counts,
         "storage_bytes": storage_bytes,
         "latest_run": dict(latest) if latest else None,
+        "provider_usage": get_provider_usage(db_target),
     }

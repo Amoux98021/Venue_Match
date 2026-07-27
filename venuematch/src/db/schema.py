@@ -29,6 +29,7 @@ artists = Table(
     Column("home_state", String),
     Column("musicbrainz_id", String),
     Column("ticketmaster_id", String),
+    Column("jambase_id", String),
     Column("lastfm_url", Text),
     Column("data_source", String),
     Column("updated_at", DateTime(timezone=True), server_default=func.now()),
@@ -50,6 +51,7 @@ venues = Table(
     Column("capacity_source", String),
     Column("capacity_verified_at", DateTime(timezone=True)),
     Column("capacity_checked_at", DateTime(timezone=True)),
+    Column("jambase_history_checked_at", DateTime(timezone=True)),
     Column("data_source", String),
     Column("updated_at", DateTime(timezone=True), server_default=func.now()),
     UniqueConstraint("name", "city", "state", name="uq_venue_location"),
@@ -81,6 +83,7 @@ events = Table(
     Column("outcome_label", Integer),
     Column("source", String),
     Column("external_id", String),
+    Column("source_url", Text),
     Column("updated_at", DateTime(timezone=True), server_default=func.now()),
 )
 
@@ -138,6 +141,16 @@ ingestion_runs = Table(
     Column("details", Text),
 )
 
+provider_api_usage = Table(
+    "provider_api_usage",
+    metadata,
+    Column("provider", String, primary_key=True),
+    Column("period", String, primary_key=True),
+    Column("calls_used", Integer, nullable=False, server_default="0"),
+    Column("call_limit", Integer, nullable=False),
+    Column("updated_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
+)
+
 recommendations = Table(
     "recommendations",
     metadata,
@@ -171,5 +184,6 @@ TABLES = {
         venue_genre_history,
         recommendations,
         ingestion_runs,
+        provider_api_usage,
     )
 }

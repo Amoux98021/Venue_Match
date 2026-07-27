@@ -7,6 +7,7 @@ from src.ingestion.service import (
     IngestionClients,
     _apply_capacity_overrides,
     get_ingestion_status,
+    run_jambase_history_backfill,
     run_live_ingestion,
 )
 from src.scoring.recommender import recommend_venues_for_artist
@@ -91,6 +92,26 @@ class FakeJamBase:
             }
         }
 
+    def search_events(self, venue_id, **params):
+        slug = venue_id.split(":", 1)[-1]
+        return {
+            "events": [
+                {
+                    "identifier": f"jambase:event-{slug}",
+                    "url": f"https://www.jambase.com/show/{slug}",
+                    "startDate": "2026-06-15T20:00:00",
+                    "genre": [{"name": "Indie Rock"}],
+                    "performer": [
+                        {
+                            "name": f"JamBase Artist {slug}",
+                            "identifier": f"jambase:artist-{slug}",
+                        }
+                    ],
+                }
+            ],
+            "pagination": {"page": 1, "totalPages": 1},
+        }
+
 
 def _clients(ticketmaster=None):
     return IngestionClients(
@@ -161,3 +182,26 @@ def test_manual_capacity_override_is_persistent() -> None:
     assert venue_rows["venue_nikki"]["capacity"] == 150
     assert venue_rows["venue_nikki"]["capacity_source"] == "manual"
     assert source_rows[0]["capacity"] == 150
+
+
+def test_jambase_history_backfill_is_resumable(tmp_path: Path) -> None:
+    database_path = tmp_path / "history.db"
+    run_live_ingestion(database_path, clients=_clients())
+
+    first = run_jambase_history_backfill(
+        database_path,
+        client=FakeJamBase(),
+        batch_size=2,
+    )
+    second = run_jambase_history_backfill(
+        database_path,
+        client=FakeJamBase(),
+        batch_size=2,
+    )
+
+    assert first.venues_checked == 2
+    assert second.venues_checked == 2
+    assert first.remaining_venues == 3
+    assert second.remaining_venues == 1
+    assert len(repository.get_events(database_path)) == 9
+    assert "indie rock" in repository.get_artist_genres(database_path)["genre"].tolist()

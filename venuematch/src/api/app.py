@@ -14,7 +14,11 @@ from src.api.bootstrap import ensure_database_ready
 from src.api.schemas import ArtistVenueRequest, RecommendationResponse, VenueArtistRequest
 from src.db import repository
 from src.db.database import database_backend
-from src.ingestion import get_ingestion_status, run_live_ingestion
+from src.ingestion import (
+    get_ingestion_status,
+    run_jambase_history_backfill,
+    run_live_ingestion,
+)
 from src.scoring.recommender import WEIGHTS, recommend_artists_for_venue, recommend_venues_for_artist
 from src.utils.config import credentials_available, get_env
 
@@ -47,6 +51,13 @@ def _data_mode() -> str:
     if repository.has_live_data():
         return "live"
     return "live-ready" if any(credentials_available().values()) else "sample"
+
+
+def _require_cron_secret(authorization: Optional[str]) -> None:
+    secret = get_env("CRON_SECRET")
+    expected = f"Bearer {secret}" if secret else ""
+    if not authorization or not expected or not compare_digest(authorization, expected):
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
 
 @asynccontextmanager
@@ -198,14 +209,26 @@ def ingestion_status() -> dict[str, Any]:
 
 @app.get("/ingestion/sync")
 def ingestion_sync(authorization: Optional[str] = Header(default=None)) -> dict[str, Any]:
-    secret = get_env("CRON_SECRET")
-    expected = f"Bearer {secret}" if secret else ""
-    if not authorization or not expected or not compare_digest(authorization, expected):
-        raise HTTPException(status_code=401, detail="Unauthorized")
+    _require_cron_secret(authorization)
     try:
         return asdict(run_live_ingestion())
     except RuntimeError as error:
         raise HTTPException(
             status_code=503,
             detail="Live ingestion could not complete; inspect provider configuration and logs.",
+        ) from error
+
+
+@app.get("/ingestion/jambase-history")
+def jambase_history_backfill(
+    authorization: Optional[str] = Header(default=None),
+    batch_size: int = Query(default=10, ge=1, le=25),
+) -> dict[str, Any]:
+    _require_cron_secret(authorization)
+    try:
+        return asdict(run_jambase_history_backfill(batch_size=batch_size))
+    except RuntimeError as error:
+        raise HTTPException(
+            status_code=503,
+            detail="JamBase history backfill could not complete; inspect provider configuration.",
         ) from error

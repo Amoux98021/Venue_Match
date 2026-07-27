@@ -70,6 +70,7 @@ CENSUS_ACS_YEAR=2024
 SPOTIFY_CLIENT_ID=
 SPOTIFY_CLIENT_SECRET=
 JAMBASE_API_KEY=
+JAMBASE_MONTHLY_CALL_LIMIT=950
 ALLOWED_ORIGINS=http://localhost:3000
 CRON_SECRET=
 ```
@@ -94,13 +95,15 @@ Production exposes `GET /ingestion/sync`, protected by `CRON_SECRET`. Vercel cal
 
 - requests up to 75 upcoming music events for each launch city
 - upserts artists, venues, events, tags, and Census demographics
-- resolves Ticketmaster venue IDs through JamBase and stores maximum capacity with provenance
+- resolves at most five new Ticketmaster venues through JamBase and stores capacity with provenance
 - rebuilds city-demand and venue-booking signals from normalized event rows
 - retains one year of Ticketmaster event records and stores no raw API responses
 
-JamBase capacity checks are cached for 30 days to protect the API quota. Capacity values use JamBase's `maximumAttendeeCapacity` field and keep the source record, URL, and retrieval timestamp in `venue_capacity_sources`. JamBase attribution is displayed beside sourced capacities in the recommendation interface.
+Every JamBase request first reserves a call in `provider_api_usage`. VenueMatch enforces a maximum application budget of 950 calls per UTC calendar month, leaving a 50-call safety buffer below the Developer plan's 1,000-call quota. Once the budget is exhausted, the client raises a local error before contacting JamBase. Calls made outside VenueMatch are not visible to this ledger, so the JamBase dashboard remains the source of truth.
 
-`GET /ingestion/status` reports table counts, the latest run, and Postgres database size. The Neon Free plan currently allows 0.5 GB per project, so the bounded normalized dataset is intentionally much smaller than the available storage.
+The protected `GET /ingestion/jambase-history?batch_size=10` endpoint is a resumable, one-time trial backfill. It requests one year of historical events for venues already matched to JamBase, stores up to 100 events per venue, and marks each completed venue so retries do not spend duplicate calls. Historical access is unavailable after moving to the Developer plan.
+
+`GET /ingestion/status` reports table counts, the latest run, JamBase usage/remaining budget, and Postgres database size. The Neon Free plan currently allows 0.5 GB per project, so the bounded normalized dataset is intentionally much smaller than the available storage.
 
 ## Scoring model
 
@@ -123,6 +126,9 @@ Genre fit uses normalized overlap between artist tags, venue history, and city s
 - `POST /recommendations/venue-to-artist`
 - `GET /cities/{city}/dashboard`
 - `GET /raw/{dataset}`
+- `GET /ingestion/status`
+- `GET /ingestion/sync` (`CRON_SECRET` required)
+- `GET /ingestion/jambase-history` (`CRON_SECRET` required)
 
 ## Neon and Vercel deployment
 
