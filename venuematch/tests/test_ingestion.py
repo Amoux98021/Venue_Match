@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 from pathlib import Path
 
+import requests
+
 from src.db import repository
 from src.db.seed import seed_sample_data
 from src.ingestion.service import (
@@ -113,6 +115,19 @@ class FakeJamBase:
         }
 
 
+class OneBadVenueJamBase(FakeJamBase):
+    def __init__(self):
+        self.calls = 0
+
+    def search_events(self, venue_id, **params):
+        self.calls += 1
+        if self.calls == 1:
+            response = requests.Response()
+            response.status_code = 400
+            raise requests.HTTPError(response=response)
+        return super().search_events(venue_id, **params)
+
+
 def _clients(ticketmaster=None):
     return IngestionClients(
         ticketmaster=ticketmaster or FakeTicketmaster(),
@@ -216,3 +231,20 @@ def test_jambase_history_backfill_is_resumable(tmp_path: Path) -> None:
     assert future.mode == "future"
     assert future.venues_checked == 1
     assert repository.get_venues(database_path)["jambase_future_checked_at"].notna().sum() == 1
+
+
+def test_jambase_backfill_skips_one_invalid_venue(tmp_path: Path) -> None:
+    database_path = tmp_path / "invalid-venue.db"
+    run_live_ingestion(database_path, clients=_clients())
+
+    result = run_jambase_history_backfill(
+        database_path,
+        client=OneBadVenueJamBase(),
+        batch_size=2,
+        include_history=False,
+    )
+
+    assert result.status == "partial"
+    assert result.venues_checked == 1
+    assert result.remaining_venues == 3
+    assert result.provider_errors == ["jambase:HTTP 400"]

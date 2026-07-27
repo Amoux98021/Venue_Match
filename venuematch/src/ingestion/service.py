@@ -747,7 +747,15 @@ def run_jambase_history_backfill(
             if isinstance(error, ProviderQuotaExceeded):
                 break
             status_code = getattr(getattr(error, "response", None), "status_code", None)
-            if status_code in {400, 401, 403, 429}:
+            if status_code in {400, 404}:
+                with get_connection(db_target) as connection:
+                    connection.execute(
+                        update(venues)
+                        .where(venues.c.id == venue["id"])
+                        .values({checked_column.name: now, "updated_at": now})
+                    )
+                continue
+            if status_code in {401, 403, 429}:
                 break
 
     with get_connection(db_target) as connection:
