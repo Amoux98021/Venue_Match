@@ -386,12 +386,20 @@ def _enrich_jambase_capacities(
             checked += 1
             venue["capacity_checked_at"] = now
             jambase_venue = payload.get("venue") or {}
+            jambase_id = jambase_venue.get("identifier")
+            source_url = jambase_venue.get("url")
+            if jambase_id:
+                venue.update(
+                    {
+                        "jambase_id": jambase_id,
+                        "data_source": _source_list(venue.get("data_source"), "jambase"),
+                    }
+                )
+
             capacity = _number(jambase_venue.get("maximumAttendeeCapacity"), int)
             if capacity is None or capacity <= 0:
                 continue
 
-            jambase_id = jambase_venue.get("identifier")
-            source_url = jambase_venue.get("url")
             venue.update(
                 {
                     "capacity": capacity,
@@ -419,6 +427,9 @@ def _enrich_jambase_capacities(
             if isinstance(error, ProviderQuotaExceeded):
                 break
             status_code = getattr(getattr(error, "response", None), "status_code", None)
+            if status_code in {400, 404}:
+                venue["capacity_checked_at"] = now
+                continue
             if status_code in {401, 403, 429}:
                 break
     return source_rows, checked, updated

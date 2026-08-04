@@ -35,14 +35,14 @@ The first version was a Python and Streamlit MVP backed by SQLite and sample dat
 | Category | Production result |
 | --- | --- |
 | Product | Bidirectional artist-to-venue recommendation platform |
-| Live catalog | 2,321 artists and 76 venues |
-| Booking data | 4,262 event-performer records |
-| Genre data | 3,928 artist-genre links and 654 venue-genre signals |
-| Market data | 140 city-genre signals for the five-market launch corridor |
+| Live catalog | 2,550 artists and 127 venues |
+| Booking data | 4,813 event-performer records |
+| Genre data | 4,390 artist-genre links and 789 venue-genre signals |
+| Market data | 206 city-genre signals across ten target cities |
 | Capacity provenance | 66 stored venue-capacity source records |
-| Automation | 27 completed ingestion runs as of August 4, 2026 |
-| Storage | Approximately 12.6 MB in Neon Postgres |
-| Quality | 12 backend tests, clean ESLint, successful production Next.js build |
+| Automation | 28 completed ingestion runs as of August 4, 2026 |
+| Storage | Approximately 13 MB in Neon Postgres |
+| Quality | 15 backend tests, clean ESLint, zero npm audit findings, successful production Next.js build |
 | Deployment | Separate frontend and API projects on Vercel |
 
 The database metrics above are a production snapshot from August 4, 2026. The `events` table stores one row per artist-event-venue relationship, so multi-artist concerts produce multiple event-performer records.
@@ -146,7 +146,7 @@ VenueMatch uses modular clients so provider-specific authentication, URLs, and r
 | JamBase API | Venue identity, capacity provenance, and event catalog enrichment |
 | Spotify client | Optional enrichment path, not required for production operation |
 
-The daily ingestion job queries five launch markets: Washington, Baltimore, Philadelphia, New York, and College Park. It performs idempotent upserts, enriches a bounded number of artists and venues, rebuilds aggregate demand features, records run metadata, and preserves existing live data if a provider returns no usable events.
+The daily ingestion job queries ten target cities: Washington, Baltimore, Philadelphia, New York, College Park, Richmond, Pittsburgh, Newark, Buffalo, and Boston. It performs idempotent upserts, enriches a bounded number of artists and venues, rebuilds aggregate demand features, records run metadata, and preserves existing live data if a provider returns no usable events.
 
 Important pipeline safeguards include:
 
@@ -243,7 +243,7 @@ SQLite remained available locally, while Neon Postgres became the production dat
 
 ### Phase 4: Capacity and catalog expansion
 
-JamBase venue matching added capacity provenance. A manual override path handled verified exceptions such as Nikki Lopez Philly. A one-time event backfill expanded the catalog from 625 to 2,254 artists and from 882 to 4,019 event-performer rows. Subsequent daily ingestion brought the catalog to its current 2,321 artists and 4,262 event-performer rows.
+JamBase venue matching added capacity provenance. A manual override path handled verified exceptions such as Nikki Lopez Philly. A one-time event backfill expanded the catalog from 625 to 2,254 artists and from 882 to 4,019 event-performer rows. Expanding the live corridor to ten cities and continuing daily ingestion brought the catalog to its current 2,550 artists, 127 venues, and 4,813 event-performer rows.
 
 ## Key Engineering Challenges
 
@@ -285,7 +285,7 @@ JamBase venue matching added capacity provenance. A manual override path handled
 
 **Decision:** Add a Postgres-backed monthly usage ledger. Every JamBase client request atomically reserves a call before contacting the provider. VenueMatch hard-caps itself at 950 calls, preserving a 50-call buffer below the 1,000-call plan allowance.
 
-**Result:** Concurrent functions cannot race past the application budget, and usage is visible through the ingestion status endpoint. The ledger recorded 71 calls in July and 4 calls through August 4.
+**Result:** Concurrent functions cannot race past the application budget, and usage is visible through the ingestion status endpoint. The ledger recorded 71 calls in July and 9 calls through the August 4 expansion, leaving 941 application-budget calls for the month.
 
 ### 6. Recovering from provider and entity failures
 
@@ -329,7 +329,7 @@ The design emphasizes:
 
 The current repository passes:
 
-- 12 backend tests covering scoring weights, city filtering, API behavior, seed mode, idempotent ingestion, data preservation, capacity overrides, resumable backfills, invalid venue handling, and quota enforcement
+- 15 backend tests covering scoring weights, city filtering, API behavior, seed mode, idempotent ingestion, data preservation, capacity overrides, identity enrichment, resumable backfills, invalid venue handling, and quota enforcement
 - ESLint across the Next.js application
 - TypeScript validation during the production build
 - a successful Next.js 16 production build
@@ -346,7 +346,7 @@ VenueMatch demonstrates more than a recommendation formula. It shows a complete 
 - automated daily refreshes without sacrificing local reproducibility
 - preserved explainability at every ranking step
 - added quota controls before overages became a production problem
-- kept the production database under 13 MB through normalized, bounded storage
+- kept the production database near 13 MB through normalized, bounded storage
 
 These are system and data outcomes. VenueMatch has not yet been validated against booking revenue, ticket sales, or attendance outcomes.
 
@@ -368,7 +368,7 @@ These are system and data outcomes. VenueMatch has not yet been validated agains
 5. Replace event-frequency demand with richer market signals where licensing allows.
 6. Add user accounts, saved shortlists, notes, and collaboration workflows.
 7. Add provider-health alerts and a dashboard warning when credentials expire.
-8. Expand beyond the initial Washington-to-New York corridor.
+8. Expand from the East Coast test corridor into Midwest, South, and West Coast markets.
 
 ## What I Learned
 
@@ -381,8 +381,8 @@ VenueMatch became a stronger portfolio project when the question changed from "C
 ## Resume-Ready Bullets
 
 - Built and deployed an explainable music-booking recommendation platform using Python, FastAPI, Next.js, TypeScript, SQLAlchemy, Neon Postgres, and Vercel.
-- Designed a weighted ranking engine combining genre overlap, venue history, local demand, room capacity, and artist popularity across a live catalog of 2,321 artists and 76 venues.
-- Developed idempotent ingestion pipelines for Ticketmaster, Last.fm, MusicBrainz, US Census, and JamBase data, producing more than 4,200 normalized artist-event-venue records.
+- Designed a weighted ranking engine combining genre overlap, venue history, local demand, room capacity, and artist popularity across a live catalog of 2,550 artists and 127 venues.
+- Developed idempotent ingestion pipelines for Ticketmaster, Last.fm, MusicBrainz, US Census, and JamBase data, producing more than 4,800 normalized artist-event-venue records.
 - Implemented provenance-aware capacity enrichment, resilient provider fallbacks, protected cron ingestion, and an atomic monthly API quota circuit breaker.
 
 ## Suggested Portfolio Screenshots

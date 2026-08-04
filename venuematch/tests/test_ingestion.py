@@ -129,6 +129,29 @@ class OneBadVenueJamBase(FakeJamBase):
         return super().search_events(venue_id, **params)
 
 
+class NoCapacityJamBase(FakeJamBase):
+    def get_venue_by_external_id(self, source, external_id):
+        return {
+            "venue": {
+                "identifier": f"jambase:{external_id}",
+                "url": f"https://www.jambase.com/venue/{external_id}",
+            }
+        }
+
+
+class OneBadCapacityJamBase(FakeJamBase):
+    def __init__(self):
+        self.calls = 0
+
+    def get_venue_by_external_id(self, source, external_id):
+        self.calls += 1
+        if self.calls == 1:
+            response = requests.Response()
+            response.status_code = 400
+            raise requests.HTTPError(response=response)
+        return super().get_venue_by_external_id(source, external_id)
+
+
 def _clients(ticketmaster=None):
     return IngestionClients(
         ticketmaster=ticketmaster or FakeTicketmaster(),
@@ -250,4 +273,29 @@ def test_jambase_backfill_skips_one_invalid_venue(tmp_path: Path) -> None:
     assert result.status == "partial"
     assert result.venues_checked == 1
     assert result.remaining_venues == 3
+    assert result.provider_errors == ["jambase:HTTP 400"]
+
+
+def test_jambase_identity_is_kept_without_capacity(tmp_path: Path) -> None:
+    database_path = tmp_path / "identity.db"
+    clients = _clients()
+    clients.jambase = NoCapacityJamBase()
+
+    result = run_live_ingestion(database_path, clients=clients)
+    stored_venues = repository.get_venues(database_path)
+
+    assert result.jambase_venues_checked == 5
+    assert result.capacities_updated == 0
+    assert stored_venues["jambase_id"].notna().sum() == 5
+
+
+def test_capacity_enrichment_skips_one_invalid_venue(tmp_path: Path) -> None:
+    database_path = tmp_path / "invalid-capacity.db"
+    clients = _clients()
+    clients.jambase = OneBadCapacityJamBase()
+
+    result = run_live_ingestion(database_path, clients=clients)
+
+    assert result.jambase_venues_checked == 4
+    assert result.capacities_updated == 4
     assert result.provider_errors == ["jambase:HTTP 400"]
