@@ -52,6 +52,11 @@ TARGET_CITIES = (
     CityTarget("Philadelphia", "PA", "42", "60000"),
     CityTarget("New York", "NY", "36", "51000"),
     CityTarget("College Park", "MD", "24", "18750"),
+    CityTarget("Richmond", "VA", "51", "67000"),
+    CityTarget("Pittsburgh", "PA", "42", "61000"),
+    CityTarget("Newark", "NJ", "34", "51000"),
+    CityTarget("Buffalo", "NY", "36", "11000"),
+    CityTarget("Boston", "MA", "25", "07000"),
 )
 
 EVENT_LOOKAHEAD_DAYS = 180

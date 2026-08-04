@@ -7,6 +7,7 @@ from src.db import repository
 from src.db.seed import seed_sample_data
 from src.ingestion.service import (
     IngestionClients,
+    TARGET_CITIES,
     _apply_capacity_overrides,
     get_ingestion_status,
     run_jambase_history_backfill,
@@ -144,17 +145,19 @@ def test_live_ingestion_replaces_sample_data_and_is_idempotent(tmp_path: Path) -
 
     first = run_live_ingestion(database_path, clients=_clients())
     second = run_live_ingestion(database_path, clients=_clients())
+    third = run_live_ingestion(database_path, clients=_clients())
 
     assert first.sample_data_removed is True
     assert second.sample_data_removed is False
     assert first.capacities_updated == 5
-    assert second.jambase_venues_checked == 0
+    assert second.capacities_updated == 5
+    assert third.jambase_venues_checked == 0
     assert set(repository.get_artists(database_path)["data_source"]) != {"sample"}
-    assert len(repository.get_events(database_path)) == 5
-    assert len(repository.get_venues(database_path)) == 5
+    assert len(repository.get_events(database_path)) == len(TARGET_CITIES)
+    assert len(repository.get_venues(database_path)) == len(TARGET_CITIES)
     assert set(repository.get_venues(database_path)["capacity"]) == {1750}
-    assert len(repository.get_venue_capacity_sources(database_path)) == 5
-    assert len(repository.get_city_demographics(database_path)) == 5
+    assert len(repository.get_venue_capacity_sources(database_path)) == len(TARGET_CITIES)
+    assert len(repository.get_city_demographics(database_path)) == len(TARGET_CITIES)
     assert not repository.get_city_genre_signals(database_path).empty
     assert not repository.get_venue_genre_history(database_path).empty
     recommendation = recommend_venues_for_artist(
@@ -162,7 +165,7 @@ def test_live_ingestion_replaces_sample_data_and_is_idempotent(tmp_path: Path) -
     ).ranked.iloc[0]
     assert recommendation["capacity"] == 1750
     assert recommendation["capacity_source"] == "jambase"
-    assert get_ingestion_status(database_path)["counts"]["ingestion_runs"] == 2
+    assert get_ingestion_status(database_path)["counts"]["ingestion_runs"] == 3
 
 
 def test_empty_ticketmaster_refresh_preserves_existing_data(tmp_path: Path) -> None:
@@ -219,7 +222,7 @@ def test_jambase_history_backfill_is_resumable(tmp_path: Path) -> None:
     assert first.mode == "historical"
     assert first.remaining_venues == 3
     assert second.remaining_venues == 1
-    assert len(repository.get_events(database_path)) == 9
+    assert len(repository.get_events(database_path)) == len(TARGET_CITIES) + 4
     assert "indie rock" in repository.get_artist_genres(database_path)["genre"].tolist()
 
     future = run_jambase_history_backfill(

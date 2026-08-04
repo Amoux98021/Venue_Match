@@ -6,6 +6,7 @@ from src.db.database import initialize_database
 from src.utils.api_quota import (
     ProviderQuotaExceeded,
     get_provider_usage,
+    jambase_monthly_limit,
     reserve_provider_call,
 )
 
@@ -23,3 +24,9 @@ def test_provider_quota_stops_before_overage(tmp_path: Path) -> None:
     usage = get_provider_usage(database_path)[0]
     assert usage["calls_used"] == 3
     assert usage["remaining"] == 0
+
+
+def test_jambase_limit_keeps_safety_reserve(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("JAMBASE_MONTHLY_CALL_LIMIT", "1000")
+
+    assert jambase_monthly_limit() == 950

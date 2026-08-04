@@ -9,3 +9,4 @@ web/.env.local
 web/.next/
 web/node_modules/
 .vercel
+.DS_Store

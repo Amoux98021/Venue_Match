@@ -93,7 +93,7 @@ python scripts/ingest_live.py
 
 Production exposes `GET /ingestion/sync`, protected by `CRON_SECRET`. Vercel calls it once daily at approximately 07:00 UTC. Each refresh:
 
-- requests up to 75 upcoming music events for each launch city
+- requests up to 75 upcoming music events across Washington, Baltimore, Philadelphia, New York, College Park, Richmond, Pittsburgh, Newark, Buffalo, and Boston
 - upserts artists, venues, events, tags, and Census demographics
 - resolves at most five new Ticketmaster venues through JamBase and stores capacity with provenance
 - rebuilds city-demand and venue-booking signals from normalized event rows
