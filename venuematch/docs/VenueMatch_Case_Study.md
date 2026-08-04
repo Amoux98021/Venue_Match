@@ -35,14 +35,14 @@ The first version was a Python and Streamlit MVP backed by SQLite and sample dat
 | Category | Production result |
 | --- | --- |
 | Product | Bidirectional artist-to-venue recommendation platform |
-| Live catalog | 2,598 artists and 127 venues |
-| Booking data | 4,947 event-performer records |
-| Genre data | 4,480 artist-genre links and 818 venue-genre signals |
-| Market data | 217 city-genre signals across ten target cities |
-| Capacity provenance | 70 stored venue-capacity source records |
-| Automation | 29 completed ingestion runs as of August 4, 2026 |
-| Storage | Approximately 13.5 MB in Neon Postgres |
-| Quality | 15 backend tests, clean ESLint, zero npm audit findings, successful production Next.js build |
+| Live catalog | 2,867 artists and 210 venues |
+| Booking data | 5,562 event-performer records |
+| Genre data | 4,961 artist-genre links and 1,013 venue-genre signals |
+| Market data | 284 city-genre signals across 15 target cities |
+| Capacity provenance | 75 stored venue-capacity source records |
+| Automation | 30 completed ingestion runs as of August 4, 2026 |
+| Storage | Approximately 13.8 MB in Neon Postgres |
+| Quality | 18 backend tests, clean ESLint, zero npm audit findings, successful production Next.js build |
 | Deployment | Separate frontend and API projects on Vercel |
 
 The database metrics above are a production snapshot from August 4, 2026. The `events` table stores one row per artist-event-venue relationship, so multi-artist concerts produce multiple event-performer records.
@@ -146,7 +146,7 @@ VenueMatch uses modular clients so provider-specific authentication, URLs, and r
 | JamBase API | Venue identity, capacity provenance, and event catalog enrichment |
 | Spotify client | Optional enrichment path, not required for production operation |
 
-The daily ingestion job queries ten target cities: Washington, Baltimore, Philadelphia, New York, College Park, Richmond, Pittsburgh, Newark, Buffalo, and Boston. It performs idempotent upserts, enriches a bounded number of artists and venues, rebuilds aggregate demand features, records run metadata, and preserves existing live data if a provider returns no usable events.
+The daily ingestion job queries 15 target cities: Washington, Baltimore, Philadelphia, New York, College Park, Richmond, Pittsburgh, Newark, Buffalo, Boston, Atlanta, Nashville, Chicago, Detroit, and Cleveland. It performs idempotent upserts, enriches a bounded number of artists and venues, rebuilds aggregate demand features, records run metadata, and preserves existing live data if a provider returns no usable events.
 
 Important pipeline safeguards include:
 
@@ -195,7 +195,7 @@ final_score =
 
 ### Genre fit
 
-Artist tags are compared with venue booking genres using normalized Jaccard overlap. The score also incorporates city demand so a venue is not evaluated in isolation from its local market.
+Artist tags are compared with venue booking genres using a blend of exact Jaccard overlap and broader genre-family overlap. This gives partial credit to related labels such as indie rock and alternative rock while preserving the original provider tags. Non-musical Last.fm tags such as `seen live` and `favorites` are excluded from scoring.
 
 ```text
 jaccard(A, B) = |A intersection B| / |A union B|
@@ -225,7 +225,9 @@ Last.fm listener counts are log-scaled so global acts do not completely overwhel
 
 ### Explanation layer
 
-Every recommendation includes matched genres, local demand, capacity context, and the five component scores. The UI displays both bars and numeric values so users can understand why one match outranked another.
+Every recommendation includes matched genres, local demand, capacity context, and the five independent component scores. The UI displays both bars and numeric values so users can understand why one match outranked another.
+
+VenueMatch also reports a separate confidence percentage based on the availability of artist genres, venue history, city signals, capacity, and popularity. Confidence never changes rank; it communicates how much evidence supports the score.
 
 ## From MVP To Production
 
@@ -243,7 +245,7 @@ SQLite remained available locally, while Neon Postgres became the production dat
 
 ### Phase 4: Capacity and catalog expansion
 
-JamBase venue matching added capacity provenance. A manual override path handled verified exceptions such as Nikki Lopez Philly. A one-time event backfill expanded the catalog from 625 to 2,254 artists and from 882 to 4,019 event-performer rows. Expanding the live corridor to ten cities and enriching newly matched venues brought the catalog to its current 2,598 artists, 127 venues, and 4,947 event-performer rows.
+JamBase venue matching added capacity provenance. A manual override path handled verified exceptions such as Nikki Lopez Philly. A one-time event backfill expanded the catalog from 625 to 2,254 artists and from 882 to 4,019 event-performer rows. Expanding the live corridor to 15 cities and enriching newly matched venue lineups brought the catalog to its current 2,867 artists, 210 venues, and 5,562 event-performer rows.
 
 ## Key Engineering Challenges
 
@@ -368,7 +370,7 @@ These are system and data outcomes. VenueMatch has not yet been validated agains
 5. Replace event-frequency demand with richer market signals where licensing allows.
 6. Add user accounts, saved shortlists, notes, and collaboration workflows.
 7. Add provider-health alerts and a dashboard warning when credentials expire.
-8. Expand from the East Coast test corridor into Midwest, South, and West Coast markets.
+8. Expand the current East Coast, Midwest, and Southern coverage into West Coast markets.
 
 ## What I Learned
 
@@ -381,8 +383,8 @@ VenueMatch became a stronger portfolio project when the question changed from "C
 ## Resume-Ready Bullets
 
 - Built and deployed an explainable music-booking recommendation platform using Python, FastAPI, Next.js, TypeScript, SQLAlchemy, Neon Postgres, and Vercel.
-- Designed a weighted ranking engine combining genre overlap, venue history, local demand, room capacity, and artist popularity across a live catalog of 2,598 artists and 127 venues.
-- Developed idempotent ingestion pipelines for Ticketmaster, Last.fm, MusicBrainz, US Census, and JamBase data, producing more than 4,900 normalized artist-event-venue records.
+- Designed a weighted ranking engine combining genre overlap, venue history, local demand, room capacity, and artist popularity across a live catalog of 2,867 artists and 210 venues.
+- Developed idempotent ingestion pipelines for Ticketmaster, Last.fm, MusicBrainz, US Census, and JamBase data, producing more than 5,500 normalized artist-event-venue records.
 - Implemented provenance-aware capacity enrichment, resilient provider fallbacks, protected cron ingestion, and an atomic monthly API quota circuit breaker.
 
 ## Suggested Portfolio Screenshots
