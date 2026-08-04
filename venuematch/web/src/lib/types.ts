@@ -33,6 +33,8 @@ export interface ScoreRecord {
   city_demand_score: number;
   capacity_fit_score: number;
   artist_popularity_score: number;
+  confidence_score: number;
+  confidence_note: string;
   final_score: number;
   explanation: string;
 }

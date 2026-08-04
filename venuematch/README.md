@@ -93,7 +93,7 @@ python scripts/ingest_live.py
 
 Production exposes `GET /ingestion/sync`, protected by `CRON_SECRET`. Vercel calls it once daily at approximately 07:00 UTC. Each refresh:
 
-- requests up to 75 upcoming music events across Washington, Baltimore, Philadelphia, New York, College Park, Richmond, Pittsburgh, Newark, Buffalo, and Boston
+- requests up to 75 upcoming music events across 15 markets: Washington, Baltimore, Philadelphia, New York, College Park, Richmond, Pittsburgh, Newark, Buffalo, Boston, Atlanta, Nashville, Chicago, Detroit, and Cleveland
 - upserts artists, venues, events, tags, and Census demographics
 - resolves at most five new Ticketmaster venues through JamBase and stores capacity with provenance
 - rebuilds city-demand and venue-booking signals from normalized event rows
@@ -116,7 +116,7 @@ final_score =
   0.10 * artist_popularity_score
 ```
 
-Genre fit uses normalized overlap between artist tags, venue history, and city signals. Unknown venue capacity receives a neutral-low score and an explicit reduced-confidence explanation.
+Genre fit blends exact Jaccard overlap with broader genre-family overlap, while venue history and city demand remain independent score components. Each result also reports a separate data-confidence percentage based on genre, history, demand, capacity, and popularity coverage. Unknown venue capacity receives a neutral-low score and explicitly lowers confidence.
 
 ## API endpoints
 

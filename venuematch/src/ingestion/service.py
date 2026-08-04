@@ -57,6 +57,11 @@ TARGET_CITIES = (
     CityTarget("Newark", "NJ", "34", "51000"),
     CityTarget("Buffalo", "NY", "36", "11000"),
     CityTarget("Boston", "MA", "25", "07000"),
+    CityTarget("Atlanta", "GA", "13", "04000"),
+    CityTarget("Nashville", "TN", "47", "52006"),
+    CityTarget("Chicago", "IL", "17", "14000"),
+    CityTarget("Detroit", "MI", "26", "22000"),
+    CityTarget("Cleveland", "OH", "39", "16000"),
 )
 
 EVENT_LOOKAHEAD_DAYS = 180
@@ -1011,8 +1016,53 @@ def get_ingestion_status(db_target: DatabaseTarget = None) -> dict[str, Any]:
         storage_bytes = None
         if connection.dialect.name == "postgresql":
             storage_bytes = int(connection.scalar(text("SELECT pg_database_size(current_database())")) or 0)
+        coverage_counts = {
+            "artists_with_popularity": int(
+                connection.scalar(
+                    select(func.count()).select_from(artists).where(
+                        (artists.c.popularity.is_not(None))
+                        | (artists.c.monthly_listeners.is_not(None))
+                        | (artists.c.lastfm_listeners.is_not(None))
+                    )
+                )
+                or 0
+            ),
+            "artists_with_genres": int(
+                connection.scalar(select(func.count(func.distinct(artist_genres.c.artist_id)))) or 0
+            ),
+            "venues_with_capacity": int(
+                connection.scalar(
+                    select(func.count()).select_from(venues).where(venues.c.capacity.is_not(None))
+                )
+                or 0
+            ),
+            "venues_with_history": int(
+                connection.scalar(select(func.count(func.distinct(venue_genre_history.c.venue_id)))) or 0
+            ),
+            "events_with_genres": int(
+                connection.scalar(
+                    select(func.count()).select_from(events).where(events.c.genre.is_not(None))
+                )
+                or 0
+            ),
+        }
+
+    def coverage(count: int, total: int) -> dict[str, int | float]:
+        return {
+            "count": count,
+            "total": total,
+            "percent": round((count / total) * 100, 1) if total else 0.0,
+        }
+
     return {
         "counts": counts,
+        "data_quality": {
+            "artist_popularity": coverage(coverage_counts["artists_with_popularity"], counts["artists"]),
+            "artist_genres": coverage(coverage_counts["artists_with_genres"], counts["artists"]),
+            "venue_capacity": coverage(coverage_counts["venues_with_capacity"], counts["venues"]),
+            "venue_history": coverage(coverage_counts["venues_with_history"], counts["venues"]),
+            "event_genres": coverage(coverage_counts["events_with_genres"], counts["events"]),
+        },
         "storage_bytes": storage_bytes,
         "latest_run": dict(latest) if latest else None,
         "provider_usage": get_provider_usage(db_target),

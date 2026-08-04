@@ -18,6 +18,28 @@ WEIGHTS = {
     "artist_popularity_score": 0.10,
 }
 
+IGNORED_GENRE_TAGS = {
+    "favorites",
+    "female vocalists",
+    "male vocalists",
+    "seen live",
+    "under 2000 listeners",
+}
+
+GENRE_FAMILY_KEYWORDS = {
+    "rock": ("rock", "alternative", "grunge", "punk", "metal", "emo"),
+    "hip-hop": ("hip hop", "hip-hop", "rap", "trap"),
+    "electronic": ("electronic", "electronica", "edm", "house", "techno", "trance", "dubstep"),
+    "r&b-soul": ("r&b", "rnb", "soul", "motown", "neo-soul"),
+    "country-folk": ("country", "folk", "americana", "bluegrass", "singer-songwriter"),
+    "jazz-blues": ("jazz", "blues", "swing", "bebop"),
+    "latin": ("latin", "reggaeton", "salsa", "bachata", "cumbia"),
+    "pop": ("pop", "dance pop", "synthpop", "k-pop", "j-pop"),
+    "classical": ("classical", "orchestra", "symphony", "opera", "chamber"),
+    "reggae": ("reggae", "dancehall", "ska"),
+    "gospel": ("gospel", "christian", "worship"),
+}
+
 
 @dataclass
 class RecommendationResult:
@@ -30,7 +52,12 @@ def _normalize(text: str) -> str:
 
 
 def _safe_set(values: list[str] | pd.Series) -> set[str]:
-    return {_normalize(value) for value in values if isinstance(value, str) and value.strip()}
+    return {
+        normalized
+        for value in values
+        if isinstance(value, str) and value.strip()
+        if (normalized := _normalize(value)) not in IGNORED_GENRE_TAGS
+    }
 
 
 def _jaccard(left: set[str], right: set[str]) -> float:
@@ -40,6 +67,79 @@ def _jaccard(left: set[str], right: set[str]) -> float:
     if not union:
         return 0.0
     return len(left & right) / len(union)
+
+
+def _genre_family(genre: str) -> str:
+    normalized = _normalize(genre).replace("_", " ")
+    for family, keywords in GENRE_FAMILY_KEYWORDS.items():
+        if any(keyword in normalized for keyword in keywords):
+            return family
+    return normalized
+
+
+def _genre_similarity(left: set[str], right: set[str]) -> float:
+    """Blend exact tags with broader genre families without changing source tags."""
+    if not left or not right:
+        return 0.0
+    exact_overlap = _jaccard(left, right)
+    family_overlap = _jaccard(
+        {_genre_family(value) for value in left},
+        {_genre_family(value) for value in right},
+    )
+    return (0.6 * exact_overlap) + (0.4 * family_overlap)
+
+
+def _related_signal_score(
+    artist_genres: set[str],
+    signals: dict[str, float],
+    missing_default: float = 0.25,
+) -> tuple[float, bool]:
+    if not artist_genres or not signals:
+        return missing_default, False
+
+    values: list[float] = []
+    for artist_genre in artist_genres:
+        if artist_genre in signals:
+            values.append(signals[artist_genre])
+            continue
+        family = _genre_family(artist_genre)
+        related = [
+            strength for genre, strength in signals.items() if _genre_family(genre) == family
+        ]
+        if related:
+            values.append(0.65 * max(related))
+    if not values:
+        return 0.0, True
+    return sum(values) / len(values), True
+
+
+def _has_artist_popularity(artist: dict) -> bool:
+    return any(
+        value is not None and not pd.isna(value)
+        for value in (artist.get("popularity"), artist.get("monthly_listeners"))
+    )
+
+
+def _confidence_score(
+    *,
+    has_artist_genres: bool,
+    has_venue_history: bool,
+    has_city_signal: bool,
+    has_capacity: bool,
+    has_artist_popularity: bool,
+) -> tuple[float, str]:
+    available = sum(
+        (
+            has_artist_genres,
+            has_venue_history,
+            has_city_signal,
+            has_capacity,
+            has_artist_popularity,
+        )
+    )
+    score = available / 5.0
+    label = "high" if score >= 0.8 else "medium" if score >= 0.6 else "low"
+    return score, f"{label} confidence ({available}/5 supporting data signals available)"
 
 
 def _artist_genre_map(frames: dict[str, pd.DataFrame]) -> dict[str, list[str]]:
@@ -123,21 +223,25 @@ def recommend_venues_for_artist(
     for _, venue in city_venues.iterrows():
         venue_id = venue["id"]
         venue_genre_set = _safe_set(venue_genres.get(venue_id, []))
-        venue_history_score = _jaccard(artist_genres, venue_genre_set)
+        genre_fit_score = _genre_similarity(artist_genres, venue_genre_set)
 
         city_key = (_normalize(venue["city"]), _normalize(venue["state"]))
         signal_map = city_signals.get(city_key, {})
-        demand_values = [signal_map[genre] for genre in artist_genres if genre in signal_map]
-        city_demand_score = sum(demand_values) / len(demand_values) if demand_values else 0.25
-
-        history_weight_values = [
-            venue_history_strength.get(venue_id, {}).get(genre, 0.0) for genre in artist_genres
-        ]
-        historical_match_score = (
-            sum(history_weight_values) / len(history_weight_values) if history_weight_values else venue_history_score
+        city_demand_score, has_city_signal = _related_signal_score(artist_genres, signal_map)
+        historical_match_score, has_venue_history = _related_signal_score(
+            artist_genres,
+            venue_history_strength.get(venue_id, {}),
         )
-        genre_fit_score = (venue_history_score + city_demand_score) / 2.0
         capacity_fit_score, capacity_note = _capacity_fit_score(artist_pop_score, venue.get("capacity"))
+        confidence_score, confidence_note = _confidence_score(
+            has_artist_genres=bool(artist_genres),
+            has_venue_history=has_venue_history,
+            has_city_signal=has_city_signal,
+            has_capacity=(
+                venue.get("capacity") is not None and not pd.isna(venue.get("capacity"))
+            ),
+            has_artist_popularity=_has_artist_popularity(artist),
+        )
         final_score = (
             WEIGHTS["genre_fit_score"] * genre_fit_score
             + WEIGHTS["venue_history_score"] * historical_match_score
@@ -146,10 +250,11 @@ def recommend_venues_for_artist(
             + WEIGHTS["artist_popularity_score"] * artist_pop_score
         )
 
-        matched_genres = ", ".join(sorted(artist_genres & venue_genre_set)) or "limited direct overlap"
+        matched_genres = ", ".join(sorted(artist_genres & venue_genre_set)) or "related genre families"
         explanation = (
             f"{venue['name']} ranks well for {artist['name']} because matched genres are {matched_genres}, "
-            f"local demand in {venue['city']} is {city_demand_score:.2f}, and {capacity_note}."
+            f"local demand in {venue['city']} is {city_demand_score:.2f}, and {capacity_note}. "
+            f"This recommendation has {confidence_note}."
         )
 
         rows.append(
@@ -168,6 +273,8 @@ def recommend_venues_for_artist(
                 "city_demand_score": round(city_demand_score, 4),
                 "capacity_fit_score": round(capacity_fit_score, 4),
                 "artist_popularity_score": round(artist_pop_score, 4),
+                "confidence_score": round(confidence_score, 4),
+                "confidence_note": confidence_note,
                 "final_score": round(final_score, 4),
                 "explanation": explanation,
             }
@@ -218,6 +325,7 @@ def recommend_artists_for_venue(
 
     artist_genres = _artist_genre_map(frames)
     venue_genres = _venue_genre_map(frames)
+    venue_history_strength = _venue_history_strength_map(frames)
     city_signals = _city_genre_signal_map(frames)
 
     rows: list[dict] = []
@@ -231,13 +339,24 @@ def recommend_artists_for_venue(
         best_result: dict | None = None
         for _, venue in matched_venues.iterrows():
             venue_genre_set = _safe_set(venue_genres.get(venue["id"], []))
-            venue_history_score = _jaccard(artist_genre_set, venue_genre_set)
+            genre_fit_score = _genre_similarity(artist_genre_set, venue_genre_set)
             city_key = (_normalize(venue["city"]), _normalize(venue["state"]))
             signal_map = city_signals.get(city_key, {})
-            demand_values = [signal_map[genre] for genre in artist_genre_set if genre in signal_map]
-            city_demand_score = sum(demand_values) / len(demand_values) if demand_values else 0.25
-            genre_fit_score = (venue_history_score + city_demand_score) / 2.0
+            city_demand_score, has_city_signal = _related_signal_score(artist_genre_set, signal_map)
+            venue_history_score, has_venue_history = _related_signal_score(
+                artist_genre_set,
+                venue_history_strength.get(venue["id"], {}),
+            )
             capacity_fit_score, _ = _capacity_fit_score(artist_pop_score, venue.get("capacity"))
+            confidence_score, confidence_note = _confidence_score(
+                has_artist_genres=bool(artist_genre_set),
+                has_venue_history=has_venue_history,
+                has_city_signal=has_city_signal,
+                has_capacity=(
+                    venue.get("capacity") is not None and not pd.isna(venue.get("capacity"))
+                ),
+                has_artist_popularity=_has_artist_popularity(artist.to_dict()),
+            )
             final_score = (
                 WEIGHTS["genre_fit_score"] * genre_fit_score
                 + WEIGHTS["venue_history_score"] * venue_history_score
@@ -262,10 +381,12 @@ def recommend_artists_for_venue(
                 "city_demand_score": round(city_demand_score, 4),
                 "capacity_fit_score": round(capacity_fit_score, 4),
                 "artist_popularity_score": round(artist_pop_score, 4),
+                "confidence_score": round(confidence_score, 4),
+                "confidence_note": confidence_note,
                 "final_score": round(final_score, 4),
                 "explanation": (
                     f"{artist['name']} aligns with {venue['name']} because its genres map to local demand "
-                    f"and the venue's booking history."
+                    f"and the venue's booking history. This recommendation has {confidence_note}."
                 ),
             }
             if best_result is None or candidate["final_score"] > best_result["final_score"]:

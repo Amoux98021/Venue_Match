@@ -169,12 +169,14 @@ def test_live_ingestion_replaces_sample_data_and_is_idempotent(tmp_path: Path) -
     first = run_live_ingestion(database_path, clients=_clients())
     second = run_live_ingestion(database_path, clients=_clients())
     third = run_live_ingestion(database_path, clients=_clients())
+    fourth = run_live_ingestion(database_path, clients=_clients())
 
     assert first.sample_data_removed is True
     assert second.sample_data_removed is False
     assert first.capacities_updated == 5
     assert second.capacities_updated == 5
-    assert third.jambase_venues_checked == 0
+    assert third.jambase_venues_checked == 5
+    assert fourth.jambase_venues_checked == 0
     assert set(repository.get_artists(database_path)["data_source"]) != {"sample"}
     assert len(repository.get_events(database_path)) == len(TARGET_CITIES)
     assert len(repository.get_venues(database_path)) == len(TARGET_CITIES)
@@ -188,7 +190,10 @@ def test_live_ingestion_replaces_sample_data_and_is_idempotent(tmp_path: Path) -
     ).ranked.iloc[0]
     assert recommendation["capacity"] == 1750
     assert recommendation["capacity_source"] == "jambase"
-    assert get_ingestion_status(database_path)["counts"]["ingestion_runs"] == 3
+    assert get_ingestion_status(database_path)["counts"]["ingestion_runs"] == 4
+    quality = get_ingestion_status(database_path)["data_quality"]
+    assert quality["venue_capacity"]["percent"] == 100.0
+    assert quality["artist_genres"]["percent"] == 100.0
 
 
 def test_empty_ticketmaster_refresh_preserves_existing_data(tmp_path: Path) -> None:

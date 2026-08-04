@@ -61,6 +61,9 @@ export function RecommendationList({ results }: { results: Result[] }) {
                 ) : (
                   <span><Sparkles size={15} /> {result.genres || "Genre data pending"}</span>
                 )}
+                <span className={`confidence confidence-${result.confidence_score >= 0.8 ? "high" : result.confidence_score >= 0.6 ? "medium" : "low"}`}>
+                  {Math.round(result.confidence_score * 100)}% data confidence
+                </span>
               </div>
 
               <ScoreBreakdown record={result} />
