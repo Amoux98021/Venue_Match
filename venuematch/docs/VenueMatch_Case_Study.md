@@ -35,13 +35,13 @@ The first version was a Python and Streamlit MVP backed by SQLite and sample dat
 | Category | Production result |
 | --- | --- |
 | Product | Bidirectional artist-to-venue recommendation platform |
-| Live catalog | 2,867 artists and 210 venues |
-| Booking data | 5,562 event-performer records |
-| Genre data | 4,961 artist-genre links and 1,013 venue-genre signals |
-| Market data | 284 city-genre signals across 15 target cities |
-| Capacity provenance | 75 stored venue-capacity source records |
-| Automation | 30 completed ingestion runs as of August 4, 2026 |
-| Storage | Approximately 13.8 MB in Neon Postgres |
+| Live catalog | 3,400 artists and 242 venues |
+| Booking data | 7,234 event-performer records |
+| Genre data | 6,270 artist-genre links and 1,310 venue-genre signals |
+| Market data | 350 city-genre signals across 15 target cities |
+| Capacity provenance | 125 stored venue-capacity source records |
+| Automation | 42 completed ingestion runs as of August 16, 2026 |
+| Storage | Approximately 15.2 MB in Neon Postgres |
 | Quality | 18 backend tests, clean ESLint, zero npm audit findings, successful production Next.js build |
 | Deployment | Separate frontend and API projects on Vercel |
 
@@ -245,7 +245,7 @@ SQLite remained available locally, while Neon Postgres became the production dat
 
 ### Phase 4: Capacity and catalog expansion
 
-JamBase venue matching added capacity provenance. A manual override path handled verified exceptions such as Nikki Lopez Philly. A one-time event backfill expanded the catalog from 625 to 2,254 artists and from 882 to 4,019 event-performer rows. Expanding the live corridor to 15 cities and enriching newly matched venue lineups brought the catalog to its current 2,867 artists, 210 venues, and 5,562 event-performer rows.
+JamBase venue matching added capacity provenance. A manual override path handled verified exceptions such as Nikki Lopez Philly. A one-time event backfill expanded the catalog from 625 to 2,254 artists and from 882 to 4,019 event-performer rows. Expanding the live corridor to 15 cities and progressively enriching matched venue lineups brought the catalog to its current 3,400 artists, 242 venues, and 7,234 event-performer rows.
 
 ## Key Engineering Challenges
 
@@ -383,8 +383,8 @@ VenueMatch became a stronger portfolio project when the question changed from "C
 ## Resume-Ready Bullets
 
 - Built and deployed an explainable music-booking recommendation platform using Python, FastAPI, Next.js, TypeScript, SQLAlchemy, Neon Postgres, and Vercel.
-- Designed a weighted ranking engine combining genre overlap, venue history, local demand, room capacity, and artist popularity across a live catalog of 2,867 artists and 210 venues.
-- Developed idempotent ingestion pipelines for Ticketmaster, Last.fm, MusicBrainz, US Census, and JamBase data, producing more than 5,500 normalized artist-event-venue records.
+- Designed a weighted ranking engine combining genre overlap, venue history, local demand, room capacity, and artist popularity across a live catalog of 3,400 artists and 242 venues.
+- Developed idempotent ingestion pipelines for Ticketmaster, Last.fm, MusicBrainz, US Census, and JamBase data, producing more than 7,200 normalized artist-event-venue records.
 - Implemented provenance-aware capacity enrichment, resilient provider fallbacks, protected cron ingestion, and an atomic monthly API quota circuit breaker.
 
 ## Suggested Portfolio Screenshots
