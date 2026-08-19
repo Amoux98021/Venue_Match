@@ -7,6 +7,7 @@ from src.db import repository
 from src.db.seed import seed_sample_data
 from src.ingestion.service import (
     IngestionClients,
+    JAMBASE_VENUES_PER_RUN,
     TARGET_CITIES,
     _apply_capacity_overrides,
     get_ingestion_status,
@@ -166,17 +167,21 @@ def test_live_ingestion_replaces_sample_data_and_is_idempotent(tmp_path: Path) -
     database_path = tmp_path / "live.db"
     seed_sample_data(database_path, overwrite=True)
 
-    first = run_live_ingestion(database_path, clients=_clients())
-    second = run_live_ingestion(database_path, clients=_clients())
-    third = run_live_ingestion(database_path, clients=_clients())
-    fourth = run_live_ingestion(database_path, clients=_clients())
+    enrichment_runs = (
+        len(TARGET_CITIES) + JAMBASE_VENUES_PER_RUN - 1
+    ) // JAMBASE_VENUES_PER_RUN
+    runs = [
+        run_live_ingestion(database_path, clients=_clients())
+        for _ in range(enrichment_runs + 1)
+    ]
+    first, second = runs[:2]
 
     assert first.sample_data_removed is True
     assert second.sample_data_removed is False
     assert first.capacities_updated == 5
     assert second.capacities_updated == 5
-    assert third.jambase_venues_checked == 5
-    assert fourth.jambase_venues_checked == 0
+    assert all(run.jambase_venues_checked > 0 for run in runs[:-1])
+    assert runs[-1].jambase_venues_checked == 0
     assert set(repository.get_artists(database_path)["data_source"]) != {"sample"}
     assert len(repository.get_events(database_path)) == len(TARGET_CITIES)
     assert len(repository.get_venues(database_path)) == len(TARGET_CITIES)
@@ -190,7 +195,7 @@ def test_live_ingestion_replaces_sample_data_and_is_idempotent(tmp_path: Path) -
     ).ranked.iloc[0]
     assert recommendation["capacity"] == 1750
     assert recommendation["capacity_source"] == "jambase"
-    assert get_ingestion_status(database_path)["counts"]["ingestion_runs"] == 4
+    assert get_ingestion_status(database_path)["counts"]["ingestion_runs"] == len(runs)
     quality = get_ingestion_status(database_path)["data_quality"]
     assert quality["venue_capacity"]["percent"] == 100.0
     assert quality["artist_genres"]["percent"] == 100.0

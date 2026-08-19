@@ -146,7 +146,7 @@ VenueMatch uses modular clients so provider-specific authentication, URLs, and r
 | JamBase API | Venue identity, capacity provenance, and event catalog enrichment |
 | Spotify client | Optional enrichment path, not required for production operation |
 
-The daily ingestion job queries 15 target cities: Washington, Baltimore, Philadelphia, New York, College Park, Richmond, Pittsburgh, Newark, Buffalo, Boston, Atlanta, Nashville, Chicago, Detroit, and Cleveland. It performs idempotent upserts, enriches a bounded number of artists and venues, rebuilds aggregate demand features, records run metadata, and preserves existing live data if a provider returns no usable events.
+The daily ingestion job queries 20 target cities: Washington, Baltimore, Philadelphia, New York, College Park, Richmond, Pittsburgh, Newark, Buffalo, Boston, Atlanta, Nashville, Chicago, Detroit, Cleveland, Los Angeles, San Francisco, Seattle, Austin, and Dallas. It performs idempotent upserts, enriches a bounded number of artists and venues, rebuilds aggregate demand features, records run metadata, and preserves existing live data if a provider returns no usable events.
 
 Important pipeline safeguards include:
 

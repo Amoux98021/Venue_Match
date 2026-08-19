@@ -62,6 +62,11 @@ TARGET_CITIES = (
     CityTarget("Chicago", "IL", "17", "14000"),
     CityTarget("Detroit", "MI", "26", "22000"),
     CityTarget("Cleveland", "OH", "39", "16000"),
+    CityTarget("Los Angeles", "CA", "06", "44000"),
+    CityTarget("San Francisco", "CA", "06", "67000"),
+    CityTarget("Seattle", "WA", "53", "63000"),
+    CityTarget("Austin", "TX", "48", "05000"),
+    CityTarget("Dallas", "TX", "48", "19000"),
 )
 
 EVENT_LOOKAHEAD_DAYS = 180
