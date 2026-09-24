@@ -1,4 +1,5 @@
 .env
+probe-secret.env
 .venv/
 __pycache__/
 *.pyc

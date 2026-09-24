@@ -14,11 +14,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.bootstrap import ensure_database_ready
 from src.api.schemas import ArtistVenueRequest, RecommendationResponse, VenueArtistRequest
+from src.clients.setlistfm_client import SetlistFmClient
 from src.db import repository
 from src.db.database import database_backend
 from src.evaluation import (
+    build_setlist_probe_input,
     run_historical_data_audit,
     run_jambase_history_probe,
+    run_setlist_history_probe,
 )
 from src.ingestion import (
     get_ingestion_status,
@@ -64,6 +67,13 @@ def _data_mode() -> str:
 
 def _require_cron_secret(authorization: Optional[str]) -> None:
     secret = get_env("CRON_SECRET")
+    expected = f"Bearer {secret}" if secret else ""
+    if not authorization or not expected or not compare_digest(authorization, expected):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+
+def _require_probe_export_secret(authorization: Optional[str]) -> None:
+    secret = get_env("PROBE_EXPORT_SECRET")
     expected = f"Bearer {secret}" if secret else ""
     if not authorization or not expected or not compare_digest(authorization, expected):
         raise HTTPException(status_code=401, detail="Unauthorized")
@@ -221,6 +231,44 @@ def historical_data_audit(as_of: Optional[date] = Query(default=None)) -> dict[s
     """Return aggregate, read-only benchmark-readiness statistics."""
     ensure_database_ready()
     return run_historical_data_audit(as_of=as_of)
+
+
+@app.get("/evaluation/setlist-probe-batch")
+def setlist_probe_batch(
+    authorization: Optional[str] = Header(default=None),
+    as_of: Optional[date] = Query(default=None),
+    offset: int = Query(default=0, ge=0),
+    batch_size: int = Query(default=4, ge=1, le=4),
+    max_pages: int = Query(default=8, ge=1, le=8),
+) -> dict[str, Any]:
+    """Run one bounded, aggregate-only Setlist probe batch without persistence."""
+    _require_probe_export_secret(authorization)
+    ensure_database_ready()
+    if not get_env("SETLISTFM_API_KEY"):
+        raise HTTPException(status_code=503, detail="Setlist.fm is not configured")
+    snapshot = build_setlist_probe_input(as_of=as_of)
+    full_sample = snapshot["sample_artists"]
+    snapshot["sample_artists"] = full_sample[offset : offset + batch_size]
+    if not snapshot["sample_artists"]:
+        raise HTTPException(status_code=404, detail="Probe batch offset is past the sample")
+    client = SetlistFmClient(minimum_interval=1.0, max_retries=1)
+    try:
+        result = run_setlist_history_probe(
+            snapshot,
+            client,
+            max_pages_per_artist=max_pages,
+        )
+    except (RuntimeError, ValueError) as error:
+        logger.warning("setlist_probe_provider_error type=%s", type(error).__name__)
+        raise HTTPException(status_code=502, detail="Setlist.fm request failed") from error
+    result["metadata"].update(
+        {
+            "batch_offset": offset,
+            "batch_size": len(snapshot["sample_artists"]),
+            "total_sample_size": len(full_sample),
+        }
+    )
+    return result
 
 
 @app.get("/evaluation/jambase-history-probe")

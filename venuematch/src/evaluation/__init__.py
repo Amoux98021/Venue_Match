@@ -12,6 +12,12 @@ from src.evaluation.musicbrainz_history_probe import (
     run_musicbrainz_history_probe,
     write_musicbrainz_probe_artifacts,
 )
+from src.evaluation.setlist_history_probe import (
+    build_setlist_probe_input,
+    consolidate_setlist_probe_batches,
+    run_setlist_history_probe,
+    write_setlist_probe_artifacts,
+)
 
 __all__ = [
     "build_historical_data_audit",
@@ -24,4 +30,8 @@ __all__ = [
     "build_musicbrainz_probe_input",
     "run_musicbrainz_history_probe",
     "write_musicbrainz_probe_artifacts",
+    "build_setlist_probe_input",
+    "consolidate_setlist_probe_batches",
+    "run_setlist_history_probe",
+    "write_setlist_probe_artifacts",
 ]
