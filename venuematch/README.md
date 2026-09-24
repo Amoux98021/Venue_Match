@@ -105,6 +105,26 @@ The protected `GET /ingestion/jambase-history?batch_size=10` endpoint is a resum
 
 `GET /ingestion/status` reports table counts, the latest run, JamBase usage/remaining budget, and Postgres database size. The Neon Free plan currently allows 0.5 GB per project, so the bounded normalized dataset is intentionally much smaller than the available storage.
 
+## Historical benchmark audit
+
+VenueMatch includes a read-only historical-data audit that measures temporal depth, provider and market coverage, entity quality, leakage-safe venue candidate sets, benchmark eligibility, and recommended expanding-window evaluation folds. It does not train a model, change scoring weights, or write to the database.
+
+Run it against the configured database:
+
+```bash
+python scripts/audit_historical_data.py
+```
+
+Or generate artifacts from the deployed API:
+
+```bash
+python scripts/audit_historical_data.py \
+  --api-url https://venue-match-api.vercel.app \
+  --output-dir reports/historical_audit
+```
+
+The audit writes Markdown, JSON, monthly and market CSVs, artist and venue coverage CSVs, a benchmark summary, and recommended temporal folds under `reports/historical_audit/`. The production-compatible read-only endpoint is `GET /evaluation/historical-audit`.
+
 ## Scoring model
 
 ```text
@@ -127,6 +147,7 @@ Genre fit blends exact Jaccard overlap with broader genre-family overlap, while 
 - `GET /cities/{city}/dashboard`
 - `GET /raw/{dataset}`
 - `GET /ingestion/status`
+- `GET /evaluation/historical-audit` (read-only)
 - `GET /ingestion/sync` (`CRON_SECRET` required)
 - `GET /ingestion/jambase-history` (`CRON_SECRET` required)
 

@@ -14,6 +14,7 @@ from src.api.bootstrap import ensure_database_ready
 from src.api.schemas import ArtistVenueRequest, RecommendationResponse, VenueArtistRequest
 from src.db import repository
 from src.db.database import database_backend
+from src.evaluation import run_historical_data_audit
 from src.ingestion import (
     get_ingestion_status,
     run_jambase_history_backfill,
@@ -205,6 +206,13 @@ def raw_preview(dataset: str, limit: int = Query(default=50, ge=1, le=250)) -> d
 def ingestion_status() -> dict[str, Any]:
     ensure_database_ready()
     return get_ingestion_status()
+
+
+@app.get("/evaluation/historical-audit")
+def historical_data_audit(as_of: Optional[date] = Query(default=None)) -> dict[str, Any]:
+    """Return aggregate, read-only benchmark-readiness statistics."""
+    ensure_database_ready()
+    return run_historical_data_audit(as_of=as_of)
 
 
 @app.get("/ingestion/sync")

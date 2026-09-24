@@ -53,3 +53,13 @@ def test_ingestion_sync_requires_cron_secret() -> None:
     with TestClient(app) as client:
         response = client.get("/ingestion/sync")
         assert response.status_code == 401
+
+
+def test_historical_audit_is_read_only_and_available() -> None:
+    with TestClient(app) as client:
+        response = client.get("/evaluation/historical-audit", params={"as_of": "2026-01-01"})
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload["metadata"]["read_only"] is True
+        assert payload["temporal_coverage"]["total_event_relationships"] > 0
+        assert "setlist_recommendation" in payload
