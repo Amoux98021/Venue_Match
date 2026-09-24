@@ -17,7 +17,6 @@ from src.api.schemas import ArtistVenueRequest, RecommendationResponse, VenueArt
 from src.db import repository
 from src.db.database import database_backend
 from src.evaluation import (
-    build_musicbrainz_probe_input,
     run_historical_data_audit,
     run_jambase_history_probe,
 )
@@ -65,13 +64,6 @@ def _data_mode() -> str:
 
 def _require_cron_secret(authorization: Optional[str]) -> None:
     secret = get_env("CRON_SECRET")
-    expected = f"Bearer {secret}" if secret else ""
-    if not authorization or not expected or not compare_digest(authorization, expected):
-        raise HTTPException(status_code=401, detail="Unauthorized")
-
-
-def _require_probe_export_secret(authorization: Optional[str]) -> None:
-    secret = get_env("PROBE_EXPORT_SECRET")
     expected = f"Bearer {secret}" if secret else ""
     if not authorization or not expected or not compare_digest(authorization, expected):
         raise HTTPException(status_code=401, detail="Unauthorized")
@@ -229,17 +221,6 @@ def historical_data_audit(as_of: Optional[date] = Query(default=None)) -> dict[s
     """Return aggregate, read-only benchmark-readiness statistics."""
     ensure_database_ready()
     return run_historical_data_audit(as_of=as_of)
-
-
-@app.get("/evaluation/musicbrainz-probe-input")
-def musicbrainz_probe_input(
-    authorization: Optional[str] = Header(default=None),
-    as_of: Optional[date] = Query(default=None),
-) -> dict[str, Any]:
-    """Temporarily expose a read-only, deterministic probe snapshot."""
-    _require_probe_export_secret(authorization)
-    ensure_database_ready()
-    return build_musicbrainz_probe_input(as_of=as_of)
 
 
 @app.get("/evaluation/jambase-history-probe")

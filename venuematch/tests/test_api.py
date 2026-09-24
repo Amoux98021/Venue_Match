@@ -69,23 +69,3 @@ def test_historical_audit_is_read_only_and_available() -> None:
         assert payload["metadata"]["read_only"] is True
         assert payload["temporal_coverage"]["total_event_relationships"] > 0
         assert "setlist_recommendation" in payload
-
-
-def test_musicbrainz_probe_snapshot_is_read_only(monkeypatch) -> None:
-    monkeypatch.setenv("PROBE_EXPORT_SECRET", "test-probe-secret")
-    with TestClient(app) as client:
-        response = client.get(
-            "/evaluation/musicbrainz-probe-input",
-            params={"as_of": "2026-09-23"},
-            headers={"Authorization": "Bearer test-probe-secret"},
-        )
-        assert response.status_code == 200
-        payload = response.json()
-        assert payload["metadata"]["read_only"] is True
-        assert "existing_relationships" in payload
-
-
-def test_musicbrainz_probe_snapshot_requires_export_secret() -> None:
-    with TestClient(app) as client:
-        response = client.get("/evaluation/musicbrainz-probe-input")
-        assert response.status_code == 401
