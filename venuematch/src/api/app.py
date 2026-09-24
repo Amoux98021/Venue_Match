@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+import logging
 from contextlib import asynccontextmanager
 from dataclasses import asdict
 from datetime import date, datetime
@@ -14,7 +16,7 @@ from src.api.bootstrap import ensure_database_ready
 from src.api.schemas import ArtistVenueRequest, RecommendationResponse, VenueArtistRequest
 from src.db import repository
 from src.db.database import database_backend
-from src.evaluation import run_historical_data_audit
+from src.evaluation import run_historical_data_audit, run_jambase_history_probe
 from src.ingestion import (
     get_ingestion_status,
     run_jambase_history_backfill,
@@ -22,6 +24,9 @@ from src.ingestion import (
 )
 from src.scoring.recommender import WEIGHTS, recommend_artists_for_venue, recommend_venues_for_artist
 from src.utils.config import credentials_available, get_env
+
+
+logger = logging.getLogger(__name__)
 
 
 def _allowed_origins() -> list[str]:
@@ -213,6 +218,25 @@ def historical_data_audit(as_of: Optional[date] = Query(default=None)) -> dict[s
     """Return aggregate, read-only benchmark-readiness statistics."""
     ensure_database_ready()
     return run_historical_data_audit(as_of=as_of)
+
+
+@app.get("/evaluation/jambase-history-probe")
+def jambase_history_probe(
+    authorization: Optional[str] = Header(default=None),
+    as_of: Optional[date] = Query(default=None),
+) -> dict[str, Any]:
+    """Run the single-use, quota-bounded JamBase entitlement probe."""
+    _require_cron_secret(authorization)
+    ensure_database_ready()
+    try:
+        result = run_jambase_history_probe(as_of=as_of)
+        logger.info(
+            "jambase_history_probe_result=%s",
+            json.dumps(result, separators=(",", ":")),
+        )
+        return result
+    except RuntimeError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error
 
 
 @app.get("/ingestion/sync")

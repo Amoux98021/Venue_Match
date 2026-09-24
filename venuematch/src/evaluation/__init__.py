@@ -6,6 +6,7 @@ from src.evaluation.historical_data_audit import (
     run_historical_data_audit,
     write_audit_artifacts,
 )
+from src.evaluation.jambase_history_probe import run_jambase_history_probe
 
 __all__ = [
     "build_historical_data_audit",
@@ -14,4 +15,5 @@ __all__ = [
     "recommend_temporal_folds",
     "run_historical_data_audit",
     "write_audit_artifacts",
+    "run_jambase_history_probe",
 ]

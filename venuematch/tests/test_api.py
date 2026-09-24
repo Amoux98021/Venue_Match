@@ -55,6 +55,12 @@ def test_ingestion_sync_requires_cron_secret() -> None:
         assert response.status_code == 401
 
 
+def test_jambase_history_probe_requires_cron_secret() -> None:
+    with TestClient(app) as client:
+        response = client.get("/evaluation/jambase-history-probe")
+        assert response.status_code == 401
+
+
 def test_historical_audit_is_read_only_and_available() -> None:
     with TestClient(app) as client:
         response = client.get("/evaluation/historical-audit", params={"as_of": "2026-01-01"})

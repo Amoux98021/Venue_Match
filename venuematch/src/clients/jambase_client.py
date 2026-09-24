@@ -70,3 +70,29 @@ class JamBaseClient(BaseAPIClient):
             },
             headers=self.headers,
         )
+
+    def search_artist_events(
+        self,
+        artist_id: str,
+        event_date_from: str,
+        event_date_to: str,
+        page: int = 1,
+        per_page: int = 100,
+        expand_past_events: bool = True,
+    ) -> dict:
+        if not self.api_key:
+            return {"source": "mock", "events": [], "pagination": {}}
+        reserve_jambase_call(self.db_target)
+        return self.get(
+            "/events",
+            params={
+                "artistId": artist_id,
+                "eventDateFrom": event_date_from,
+                "eventDateTo": event_date_to,
+                "expandPastEvents": str(expand_past_events).lower(),
+                "sort": "-eventDate",
+                "page": max(page, 1),
+                "perPage": min(max(per_page, 1), 100),
+            },
+            headers=self.headers,
+        )
