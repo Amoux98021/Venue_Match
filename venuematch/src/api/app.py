@@ -251,7 +251,7 @@ def setlist_probe_batch(
     snapshot["sample_artists"] = full_sample[offset : offset + batch_size]
     if not snapshot["sample_artists"]:
         raise HTTPException(status_code=404, detail="Probe batch offset is past the sample")
-    client = SetlistFmClient(minimum_interval=1.0, max_retries=1)
+    client = SetlistFmClient(minimum_interval=1.1, max_retries=1)
     try:
         result = run_setlist_history_probe(
             snapshot,
