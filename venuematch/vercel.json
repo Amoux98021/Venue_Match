@@ -10,10 +10,6 @@
     {
       "path": "/ingestion/sync",
       "schedule": "0 7 * * *"
-    },
-    {
-      "path": "/evaluation/jambase-history-probe",
-      "schedule": "0 8 * * *"
     }
   ]
 }
