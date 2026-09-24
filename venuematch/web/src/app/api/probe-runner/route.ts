@@ -6,6 +6,13 @@ const form = `<!doctype html><html><body><form method="post">
   <button type="submit">Run aggregate batch</button>
 </form></body></html>`;
 
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
 export async function GET() {
   return new Response(form, {
     headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
@@ -41,10 +48,12 @@ export async function POST(request: NextRequest) {
     headers: { accept: "application/json", authorization: `Bearer ${secret}` },
     cache: "no-store",
   });
-  return new Response(upstream.body, {
+  const payload = await upstream.text();
+  const document = `<!doctype html><html><body><pre id="aggregate">${escapeHtml(payload)}</pre></body></html>`;
+  return new Response(document, {
     status: upstream.status,
     headers: {
-      "content-type": upstream.headers.get("content-type") ?? "application/json",
+      "content-type": "text/html; charset=utf-8",
       "cache-control": "no-store",
     },
   });
