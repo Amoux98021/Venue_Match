@@ -273,7 +273,7 @@ def build_musicbrainz_probe_input(
             selected_venues.append(row)
             seen_venue_ids.add(row["id"])
 
-    return {
+    result = {
         "metadata": {
             "generated_at_utc": datetime.now(timezone.utc).isoformat(),
             "as_of": reference_date.isoformat(),
@@ -320,6 +320,7 @@ def build_musicbrainz_probe_input(
             "relationships": int(len(events)),
         },
     }
+    return result
 
 
 def _area_names(area: Any) -> list[str]:
@@ -922,7 +923,7 @@ def run_musicbrainz_history_probe(
         "markets_with_6_months": markets_6,
         "markets_with_12_months": markets_12,
     }
-    return {
+    result = {
         "metadata": {
             "generated_at_utc": datetime.now(timezone.utc).isoformat(),
             "as_of": as_of.isoformat(),
@@ -947,6 +948,274 @@ def run_musicbrainz_history_probe(
         "setlist_fm_still_needed": decision != "MUSICBRAINZ_BACKFILL_RECOMMENDED",
         "normalized_events": normalized_events,
     }
+    return refine_musicbrainz_probe_metrics(result, snapshot)
+
+
+def refine_musicbrainz_probe_metrics(
+    result: dict[str, Any],
+    snapshot: dict[str, Any],
+) -> dict[str, Any]:
+    """Recompute reporting metrics from cached normalized events without API access."""
+    as_of = date.fromisoformat(result["metadata"]["as_of"])
+    venues = [
+        {**row, "market": _market(row["city"], row["state"])}
+        for row in snapshot["venue_index"]
+    ]
+    target_markets = snapshot["target_markets"]
+    current_markets = {row["market"] for row in target_markets}
+    artist_by_mbid = {
+        row["musicbrainz_id"]: row
+        for row in snapshot["artist_index"]
+        if valid_mbid(row.get("musicbrainz_id"))
+    }
+    artists_by_name: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in snapshot["artist_index"]:
+        artists_by_name[normalize_entity(row["name"])].append(row)
+    place_mappings = {
+        row["place_mbid"]: row
+        for row in result.get("place_probe_results", [])
+        if row.get("place_mbid") and not row.get("error")
+    }
+
+    existing_keys: dict[tuple[str, str, str], set[str]] = defaultdict(set)
+    existing_date_artist: dict[tuple[str, str], set[str]] = defaultdict(set)
+    for row in snapshot["existing_relationships"]:
+        if row.get("event_date") and row.get("artist_id") and row.get("venue_id"):
+            existing_keys[(row["event_date"], row["artist_id"], row["venue_id"])].add(
+                row.get("source") or "unknown"
+            )
+            existing_date_artist[(row["event_date"], row["artist_id"])].add(row["venue_id"])
+
+    relationships: list[dict[str, Any]] = []
+    seen: set[tuple[Any, ...]] = set()
+    for event in result["normalized_events"]:
+        event_date = event.get("begin_date")
+        bucket = lookback_bucket(event_date, as_of) if event_date else None
+        venue_match = resolve_venue(event.get("place"), place_mappings, venues, target_markets)
+        for performer in event["performers"]:
+            artist_match = resolve_artist(performer, artist_by_mbid, artists_by_name)
+            row = {
+                "event_mbid": event["event_mbid"],
+                "event_date": event_date,
+                "lookback_bucket": bucket,
+                "artist_id": artist_match["artist_id"],
+                "artist_match_quality": artist_match["match_quality"],
+                "performer_mbid": performer["musicbrainz_id"],
+                "venue_id": venue_match.get("venue_id"),
+                "venue_match_quality": venue_match["match_quality"],
+                "place_mbid": (event.get("place") or {}).get("musicbrainz_id"),
+                "market": venue_match.get("market"),
+                "cancelled": event["cancelled"] or performer["cancelled_appearance"],
+            }
+            event_type = normalize_entity(event.get("event_type"))
+            row["usable_historical"] = bool(
+                event_date
+                and date.fromisoformat(event_date) < as_of
+                and not row["cancelled"]
+                and event_type in SUPPORTED_EVENT_TYPES
+            )
+            overlap, sources = classify_provider_overlap(
+                row, existing_keys, existing_date_artist
+            )
+            row["provider_overlap"] = overlap
+            row["existing_sources"] = sources
+            key = (
+                row["event_mbid"],
+                row.get("artist_id") or row["performer_mbid"],
+                row.get("venue_id") or row.get("place_mbid"),
+                row.get("event_date"),
+            )
+            if key not in seen:
+                seen.add(key)
+                relationships.append(row)
+
+    usable = [row for row in relationships if row["usable_historical"]]
+    additional = [row for row in usable if row["provider_overlap"] == "musicbrainz_only"]
+    relationship_bucket_counts = Counter(
+        row["lookback_bucket"] for row in usable if row.get("lookback_bucket")
+    )
+    event_buckets: dict[str, set[str]] = defaultdict(set)
+    for row in usable:
+        if row.get("lookback_bucket"):
+            event_buckets[row["lookback_bucket"]].add(row["event_mbid"])
+    bucket_labels = (
+        "0-3 months",
+        "3-6 months",
+        "6-12 months",
+        "12-24 months",
+        "24+ months",
+    )
+
+    market_rows: list[dict[str, Any]] = []
+    for market in sorted(current_markets):
+        market_usable = [row for row in usable if row.get("market") == market]
+        market_additional = [row for row in additional if row.get("market") == market]
+        if not market_usable:
+            continue
+        dates = sorted(
+            row["event_date"] for row in market_additional if row.get("event_date")
+        )
+        resolved = [
+            row
+            for row in market_usable
+            if row["venue_match_quality"] in {"exact", "high"}
+        ]
+        market_rows.append(
+            {
+                "market": market,
+                "additional_relationships": len(market_additional),
+                "additional_events": len(
+                    {row["event_mbid"] for row in market_additional}
+                ),
+                "unique_artists": len(
+                    {row["artist_id"] for row in market_additional if row.get("artist_id")}
+                ),
+                "unique_resolved_venues": len(
+                    {row["venue_id"] for row in market_additional if row.get("venue_id")}
+                ),
+                "oldest_event_date": dates[0] if dates else None,
+                "newest_event_date": dates[-1] if dates else None,
+                "months_of_temporal_depth": (
+                    round((as_of - date.fromisoformat(dates[0])).days / 30.44, 1)
+                    if dates
+                    else 0.0
+                ),
+                "exact_high_venue_resolution_rate": round(
+                    len(resolved) / len(market_usable), 4
+                ),
+            }
+        )
+
+    overlap_rows = []
+    for category in ("already_known", "musicbrainz_only", "likely_duplicate", "ambiguous"):
+        rows = [row for row in usable if row["provider_overlap"] == category]
+        overlap_rows.append(
+            {
+                "category": category,
+                "event_count": len({row["event_mbid"] for row in rows}),
+                "relationship_count": len(rows),
+            }
+        )
+    for source in sorted(
+        {source for row in usable for source in row.get("existing_sources", [])}
+    ):
+        rows = [row for row in usable if source in row.get("existing_sources", [])]
+        overlap_rows.append(
+            {
+                "category": f"already_known_{source}",
+                "event_count": len({row["event_mbid"] for row in rows}),
+                "relationship_count": len(rows),
+            }
+        )
+
+    summary = result["summary"]
+    summary["lookback_counts"] = {
+        label: len(event_buckets[label]) for label in bucket_labels
+    }
+    summary["lookback_event_counts"] = dict(summary["lookback_counts"])
+    summary["lookback_relationship_counts"] = {
+        label: relationship_bucket_counts[label] for label in bucket_labels
+    }
+    summary["events_resolving_to_existing_artists"] = len(
+        {row["event_mbid"] for row in usable if row.get("artist_id")}
+    )
+    summary["events_resolving_to_existing_venues"] = len(
+        {row["event_mbid"] for row in usable if row.get("venue_id")}
+    )
+    summary["events_matching_existing_relationships"] = len(
+        {
+            row["event_mbid"]
+            for row in usable
+            if row["provider_overlap"] == "already_known"
+        }
+    )
+    current_market_relationships = [
+        row for row in usable if row.get("market") in current_markets
+    ]
+    summary["current_market_venue_resolution_success_rate"] = round(
+        sum(
+            row["venue_match_quality"] in {"exact", "high"}
+            for row in current_market_relationships
+        )
+        / len(current_market_relationships),
+        4,
+    ) if current_market_relationships else 0.0
+    summary["events_older_than_6_months"] = sum(
+        len(event_buckets[label])
+        for label in ("6-12 months", "12-24 months", "24+ months")
+    )
+    summary["events_older_than_12_months"] = sum(
+        len(event_buckets[label]) for label in ("12-24 months", "24+ months")
+    )
+    summary["artist_resolution_quality"] = dict(
+        sorted(Counter(row["artist_match_quality"] for row in usable).items())
+    )
+    summary["venue_resolution_quality"] = dict(
+        sorted(Counter(row["venue_match_quality"] for row in usable).items())
+    )
+    summary["markets_with_6_months"] = sum(
+        row["months_of_temporal_depth"] >= 6 for row in market_rows
+    )
+    summary["markets_with_12_months"] = sum(
+        row["months_of_temporal_depth"] >= 12 for row in market_rows
+    )
+    result["market_probe_results"] = market_rows
+    result["provider_overlap_summary"] = overlap_rows
+    result["sample_profile"] = {
+        "history_bands": dict(
+            sorted(Counter(row["history_band"] for row in result["artist_probe_results"]).items())
+        ),
+        "provider_bias": dict(
+            sorted(Counter(row["provider_bias"] for row in result["artist_probe_results"]).items())
+        ),
+        "represented_artist_markets": len(
+            {row["market"] for row in result["artist_probe_results"] if row.get("market")}
+        ),
+        "represented_primary_genres": len(
+            {row["primary_genre"] for row in result["artist_probe_results"]}
+        ),
+        "mapped_place_markets": len(
+            {row["market"] for row in result.get("place_probe_results", []) if row.get("market")}
+        ),
+    }
+    artist_calls = int(result["projected_backfill"]["artist_backfill_api_call_estimate"])
+    venue_search_calls = int(snapshot["counts"]["venues"])
+    place_probe_rows = result.get("place_probe_results", [])
+    average_place_event_calls = (
+        sum(row.get("api_requests", 0) for row in place_probe_rows) / len(place_probe_rows)
+        if place_probe_rows
+        else 1.0
+    )
+    optional_place_event_calls = round(venue_search_calls * average_place_event_calls)
+    recommended_calls = artist_calls + venue_search_calls
+    expanded_calls = recommended_calls + optional_place_event_calls
+    result["projected_backfill"].update(
+        {
+            "venue_place_mapping_search_calls": venue_search_calls,
+            "optional_venue_event_calls": optional_place_event_calls,
+            "artist_plus_place_mapping_call_estimate": recommended_calls,
+            "artist_plus_mapping_and_venue_event_call_estimate": expanded_calls,
+            "artist_plus_place_mapping_runtime_minutes": round(
+                recommended_calls * result["metadata"]["minimum_request_interval_seconds"] / 60,
+                1,
+            ),
+            "expanded_runtime_minutes": round(
+                expanded_calls * result["metadata"]["minimum_request_interval_seconds"] / 60,
+                1,
+            ),
+        }
+    )
+    result["projected_backfill"].pop("optional_place_search_and_event_calls", None)
+    result["decision_checks"]["venue_resolution_quality"] = (
+        summary["current_market_venue_resolution_success_rate"] >= 0.60
+    )
+    result["projected_backfill"]["expected_markets_with_6_months"] = summary[
+        "markets_with_6_months"
+    ]
+    result["projected_backfill"]["expected_markets_with_12_months"] = summary[
+        "markets_with_12_months"
+    ]
+    return result
 
 
 def _markdown_table(rows: list[dict[str, Any]], columns: list[str]) -> str:
@@ -980,20 +1249,38 @@ Setlist.fm still needed before the final historical benchmark: **{result['setlis
 ## Coverage Summary
 
 - API requests used: **{result['api_requests_used']:,}**
+- Request breakdown: **{result['request_breakdown']['artist_events']} artist-event / {result['request_breakdown']['place_search']} place-search / {result['request_breakdown']['place_events']} place-event**
 - Artists sampled / successfully queried: **{summary['artists_sampled']} / {summary['artists_successfully_queried']}**
 - Artists with historical events: **{summary['artists_with_historical_events']}**
+- MusicBrainz places mapped: **{summary['venues_places_mapped']}**
 - Unique historical events: **{summary['unique_historical_events']:,}**
 - Events in current markets: **{summary['events_in_current_markets']:,}**
+- Events resolving to existing artists / venues: **{summary['events_resolving_to_existing_artists']:,} / {summary['events_resolving_to_existing_venues']:,}**
+- Already-known / MusicBrainz-only events: **{summary['events_matching_existing_relationships']:,} / {next(row['event_count'] for row in result['provider_overlap_summary'] if row['category'] == 'musicbrainz_only'):,}**
 - Additional historical relationships: **{summary['additional_historical_relationships']:,}**
 - Oldest / newest: **{summary['oldest_historical_event']} / {summary['newest_historical_event']}**
 - Venue-resolution success rate: **{summary['venue_resolution_success_rate']:.1%}**
+- Current-market venue-resolution success rate: **{summary['current_market_venue_resolution_success_rate']:.1%}**
 - Markets with at least 6 months: **{summary['markets_with_6_months']}**
 - Markets with at least 12 months: **{summary['markets_with_12_months']}**
+- Events older than 6 months / 12 months: **{summary['events_older_than_6_months']:,} / {summary['events_older_than_12_months']:,}**
+
+## Sample Profile
+
+```json
+{json.dumps(result['sample_profile'], indent=2)}
+```
+
+## Entity Resolution
+
+```json
+{json.dumps({'artist': summary['artist_resolution_quality'], 'venue': summary['venue_resolution_quality']}, indent=2)}
+```
 
 ## Lookback Counts
 
 ```json
-{json.dumps(summary['lookback_counts'], indent=2)}
+{json.dumps(summary['lookback_event_counts'], indent=2)}
 ```
 
 ## Market Results
@@ -1002,7 +1289,7 @@ Setlist.fm still needed before the final historical benchmark: **{result['setlis
 
 ## Provider Overlap
 
-{_markdown_table(result['provider_overlap_summary'], ['category', 'relationship_count'])}
+{_markdown_table(result['provider_overlap_summary'], ['category', 'event_count', 'relationship_count'])}
 
 ## Projected Full Backfill
 
@@ -1015,7 +1302,30 @@ Setlist.fm still needed before the final historical benchmark: **{result['setlis
 ```json
 {json.dumps(result['decision_checks'], indent=2)}
 ```
+
+## Recommended Next Action
+
+Use MusicBrainz as a partial historical enrichment source after expanding place mappings, but do not rely on it as the sole benchmark source. The all-artist projection adds approximately **{projection['projected_additional_historical_relationships']:,}** usable relationships and only **{projection['projected_0_3_month_relationships']:,}** recent held-out relationships, which is below the benchmark target. Proceed with Setlist.fm enrichment before the final historical recommendation benchmark.
 """
+
+
+def public_musicbrainz_probe_result(result: dict[str, Any]) -> dict[str, Any]:
+    return {
+        key: result[key]
+        for key in (
+            "metadata",
+            "api_requests_used",
+            "request_breakdown",
+            "summary",
+            "sample_profile",
+            "market_probe_results",
+            "provider_overlap_summary",
+            "projected_backfill",
+            "decision_checks",
+            "decision",
+            "setlist_fm_still_needed",
+        )
+    }
 
 
 def write_musicbrainz_probe_artifacts(
@@ -1024,8 +1334,9 @@ def write_musicbrainz_probe_artifacts(
 ) -> Path:
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
+    aggregate_result = public_musicbrainz_probe_result(result)
     (output / "musicbrainz_history_probe.json").write_text(
-        json.dumps(result, indent=2, sort_keys=True), encoding="utf-8"
+        json.dumps(aggregate_result, indent=2, sort_keys=True), encoding="utf-8"
     )
     (output / "musicbrainz_history_probe.md").write_text(
         render_musicbrainz_probe_report(result), encoding="utf-8"

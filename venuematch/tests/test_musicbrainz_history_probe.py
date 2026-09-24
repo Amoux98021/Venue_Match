@@ -13,9 +13,12 @@ from src.evaluation.musicbrainz_history_probe import (
     classify_provider_overlap,
     lookback_bucket,
     normalize_musicbrainz_event,
+    public_musicbrainz_probe_result,
+    refine_musicbrainz_probe_metrics,
     resolve_artist,
     resolve_place_search,
     resolve_venue,
+    write_musicbrainz_probe_artifacts,
 )
 
 
@@ -165,3 +168,103 @@ def test_probe_input_does_not_mutate_database(tmp_path) -> None:
     assert before == after
     assert snapshot["metadata"]["read_only"] is True
     assert len(snapshot["sample_artists"]) == 1
+
+
+def test_refined_metrics_count_unique_events_and_relationships_separately() -> None:
+    snapshot = {
+        "artist_index": [
+            {"id": "artist-1", "name": "Known Artist", "musicbrainz_id": ARTIST_MBID}
+        ],
+        "venue_index": [
+            {"id": "venue-1", "name": "Known Venue", "city": "Washington", "state": "DC"}
+        ],
+        "existing_relationships": [],
+        "target_markets": [
+            {"city": "Washington", "state": "DC", "market": "Washington, DC"}
+        ],
+    }
+    result = {
+        "metadata": {"as_of": "2026-09-23", "minimum_request_interval_seconds": 1.05},
+        "summary": {},
+        "projected_backfill": {"artist_backfill_api_call_estimate": 1},
+        "decision_checks": {},
+        "artist_probe_results": [
+            {
+                "history_band": "medium",
+                "provider_bias": "ticketmaster-heavy",
+                "market": "Washington, DC",
+                "primary_genre": "rock",
+            }
+        ],
+        "place_probe_results": [
+            {
+                "place_mbid": PLACE_MBID,
+                "venue_id": "venue-1",
+                "venue_name": "Known Venue",
+                "market": "Washington, DC",
+                "match_quality": "exact",
+                "error": None,
+            }
+        ],
+        "normalized_events": [
+            {
+                "event_mbid": EVENT_MBID,
+                "name": "Known Show",
+                "event_type": "Concert",
+                "begin_date": "2025-09-01",
+                "end_date": "2025-09-01",
+                "cancelled": False,
+                "performers": [
+                    {
+                        "musicbrainz_id": ARTIST_MBID,
+                        "name": "Known Artist",
+                        "relationship_type": "main performer",
+                        "cancelled_appearance": False,
+                    },
+                    {
+                        "musicbrainz_id": "44444444-4444-4444-8444-444444444444",
+                        "name": "Unknown Support",
+                        "relationship_type": "supporting performer",
+                        "cancelled_appearance": False,
+                    },
+                ],
+                "place": {
+                    "musicbrainz_id": PLACE_MBID,
+                    "name": "Known Venue",
+                    "areas": ["Washington"],
+                },
+                "discovered_by": [f"artist:{ARTIST_MBID}"],
+            }
+        ],
+    }
+    snapshot["counts"] = {"venues": 1}
+
+    refined = refine_musicbrainz_probe_metrics(result, snapshot)
+    assert refined["summary"]["lookback_event_counts"]["12-24 months"] == 1
+    assert refined["summary"]["lookback_relationship_counts"]["12-24 months"] == 2
+    assert refined["summary"]["current_market_venue_resolution_success_rate"] == 1.0
+
+
+def test_public_json_excludes_entity_and_event_level_rows() -> None:
+    result = {
+        "metadata": {"as_of": "2026-09-23"},
+        "api_requests_used": 1,
+        "request_breakdown": {},
+        "summary": {},
+        "sample_profile": {},
+        "market_probe_results": [],
+        "provider_overlap_summary": [],
+        "projected_backfill": {},
+        "decision_checks": {},
+        "decision": "MUSICBRAINZ_HISTORY_INSUFFICIENT",
+        "setlist_fm_still_needed": True,
+        "artist_probe_results": [{"name": "Private Artist Row"}],
+        "place_probe_results": [{"venue_name": "Private Venue Row"}],
+        "normalized_events": [{"name": "Private Event Row"}],
+    }
+
+    public_payload = public_musicbrainz_probe_result(result)
+
+    assert "artist_probe_results" not in public_payload
+    assert "place_probe_results" not in public_payload
+    assert "normalized_events" not in public_payload

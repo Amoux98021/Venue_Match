@@ -10,3 +10,4 @@ web/.next/
 web/node_modules/
 .vercel
 .DS_Store
+reports/musicbrainz_history_probe/artist_probe_results.csv
