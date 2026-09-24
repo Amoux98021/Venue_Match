@@ -42,6 +42,22 @@ def test_probe_plan_is_id_filtered_and_bounded() -> None:
     }
 
 
+def test_recovery_probe_uses_only_three_representative_requests() -> None:
+    plan = build_probe_plan(_artists(), _venues(), date(2026, 9, 23), recovery=True)
+
+    assert len(plan) == 3
+    assert [request["query_type"] for request in plan] == [
+        "artist_id",
+        "venue_id",
+        "venue_id",
+    ]
+    assert [request["window"]["label"] for request in plan] == [
+        "one_year_span",
+        "one_year_span",
+        "12_months_ago",
+    ]
+
+
 def test_probe_classifies_six_month_history_as_available() -> None:
     results = [
         {

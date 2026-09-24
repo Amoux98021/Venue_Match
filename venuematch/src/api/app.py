@@ -229,10 +229,15 @@ def jambase_history_probe(
     _require_cron_secret(authorization)
     ensure_database_ready()
     try:
-        result = run_jambase_history_probe(as_of=as_of)
+        try:
+            result = run_jambase_history_probe(as_of=as_of)
+        except RuntimeError as error:
+            if "already run this month" not in str(error):
+                raise
+            result = run_jambase_history_probe(as_of=as_of, recovery=True)
         logger.info(
             "jambase_history_probe_result=%s",
-            json.dumps(result, separators=(",", ":")),
+            json.dumps(result, default=str, separators=(",", ":")),
         )
         return result
     except RuntimeError as error:

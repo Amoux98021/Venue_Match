@@ -21,6 +21,8 @@ from src.utils.config import credentials_available
 
 MAX_PROBE_CALLS = 12
 PROBE_LOCK_PROVIDER = "jambase_history_probe_v1"
+MAX_RECOVERY_CALLS = 3
+RECOVERY_LOCK_PROVIDER = "jambase_history_probe_recovery_v1"
 EXISTING_HISTORY_START = date(2026, 7, 14)
 WINDOWS = {
     "3_months_ago": (120, 90),
@@ -120,6 +122,7 @@ def build_probe_plan(
     artist_rows: list[dict[str, Any]],
     venue_rows: list[dict[str, Any]],
     as_of: date,
+    recovery: bool = False,
 ) -> list[dict[str, Any]]:
     if len(artist_rows) < 5 or len(venue_rows) < 3:
         raise RuntimeError("The probe requires five resolved artists and three resolved venues")
@@ -162,6 +165,11 @@ def build_probe_plan(
 
     if len(plan) > MAX_PROBE_CALLS:
         raise RuntimeError("JamBase history probe plan exceeds its hard request ceiling")
+    if recovery:
+        # Recover representative evidence without repeating the original 12-call matrix.
+        plan = [plan[4], plan[5], plan[11]]
+        if len(plan) > MAX_RECOVERY_CALLS:
+            raise RuntimeError("JamBase recovery probe exceeds its hard request ceiling")
     return plan
 
 
@@ -276,19 +284,22 @@ def run_jambase_history_probe(
     db_target: DatabaseTarget = None,
     client: Any | None = None,
     enforce_single_run: bool = True,
+    recovery: bool = False,
 ) -> dict[str, Any]:
     initialize_database(db_target)
     if client is None and not credentials_available()["jambase"]:
         raise RuntimeError("JamBase credentials are required for the history probe")
     if enforce_single_run:
+        lock_provider = RECOVERY_LOCK_PROVIDER if recovery else PROBE_LOCK_PROVIDER
         try:
-            reserve_provider_call(PROBE_LOCK_PROVIDER, 1, db_target)
+            reserve_provider_call(lock_provider, 1, db_target)
         except ProviderQuotaExceeded as error:
-            raise RuntimeError("The bounded JamBase history probe has already run this month") from error
+            probe_name = "recovery probe" if recovery else "bounded JamBase history probe"
+            raise RuntimeError(f"The {probe_name} has already run this month") from error
 
     probe_as_of = as_of or date.today()
     artist_rows, venue_rows, universe = _select_probe_entities(probe_as_of, db_target)
-    plan = build_probe_plan(artist_rows, venue_rows, probe_as_of)
+    plan = build_probe_plan(artist_rows, venue_rows, probe_as_of, recovery=recovery)
     usage_before = _usage_for("jambase", get_provider_usage(db_target)) or {"calls_used": 0}
     jambase = client or JamBaseClient(db_target=db_target)
     api_key = getattr(jambase, "api_key", None)
@@ -383,11 +394,12 @@ def run_jambase_history_probe(
         else "Proceed with Setlist.fm historical enrichment before the historical recommendation benchmark."
     )
     response = {
-        "probe": "jambase_history_access_v1",
+        "probe": "jambase_history_access_recovery_v1" if recovery else "jambase_history_access_v1",
         "read_only_product_data": True,
         "as_of": probe_as_of.isoformat(),
-        "hard_call_ceiling": MAX_PROBE_CALLS,
+        "hard_call_ceiling": MAX_RECOVERY_CALLS if recovery else MAX_PROBE_CALLS,
         "api_calls_consumed": calls_consumed,
+        "cumulative_probe_calls_consumed": MAX_PROBE_CALLS + calls_consumed if recovery else calls_consumed,
         "artists_tested": [row["name"] for row in artist_rows],
         "venues_tested": [
             f'{row["name"]} ({row["city"]}, {row["state"]})' for row in venue_rows
