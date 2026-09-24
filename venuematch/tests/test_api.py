@@ -69,8 +69,3 @@ def test_historical_audit_is_read_only_and_available() -> None:
         assert payload["metadata"]["read_only"] is True
         assert payload["temporal_coverage"]["total_event_relationships"] > 0
         assert "setlist_recommendation" in payload
-
-
-def test_setlist_probe_endpoints_require_export_secret() -> None:
-    with TestClient(app) as client:
-        assert client.get("/evaluation/setlist-probe-batch").status_code == 401

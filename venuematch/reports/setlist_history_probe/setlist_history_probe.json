@@ -1,0 +1,447 @@
+{
+  "decision": "SETLIST_PERMISSION_REQUIRED_FOR_TRAINING",
+  "decision_checks": {
+    "candidate_venues": true,
+    "held_out_examples": true,
+    "markets_with_12_months_preferred": true,
+    "markets_with_6_months": true,
+    "usable_historical_examples": true
+  },
+  "historical_window_summary": [
+    {
+      "additional_relationships": 88,
+      "exact_high_venue_resolutions": 244,
+      "historical_window": "0-3 months",
+      "performances_in_current_markets": 464,
+      "unique_performances": 1684
+    },
+    {
+      "additional_relationships": 103,
+      "exact_high_venue_resolutions": 103,
+      "historical_window": "3-6 months",
+      "performances_in_current_markets": 224,
+      "unique_performances": 1118
+    },
+    {
+      "additional_relationships": 137,
+      "exact_high_venue_resolutions": 137,
+      "historical_window": "6-12 months",
+      "performances_in_current_markets": 297,
+      "unique_performances": 1464
+    },
+    {
+      "additional_relationships": 172,
+      "exact_high_venue_resolutions": 172,
+      "historical_window": "12-24 months",
+      "performances_in_current_markets": 386,
+      "unique_performances": 2144
+    },
+    {
+      "additional_relationships": 86,
+      "exact_high_venue_resolutions": 86,
+      "historical_window": "24+ months",
+      "performances_in_current_markets": 236,
+      "unique_performances": 990
+    }
+  ],
+  "market_coverage_summary": [
+    {
+      "additional_relationships": 32,
+      "candidate_venues": 34,
+      "dense_12_month_coverage": true,
+      "dense_6_month_coverage": true,
+      "exact_high_venue_resolution_rate": 0.3448,
+      "exact_high_venue_resolutions": 40,
+      "historical_performances": 116,
+      "market": "Atlanta, GA",
+      "months_of_temporal_depth": 31.5,
+      "newest_event_date": "2026-09-16",
+      "oldest_event_date": "2024-02-08",
+      "unique_artists": 26,
+      "unique_resolved_venues": 3
+    },
+    {
+      "additional_relationships": 16,
+      "candidate_venues": 26,
+      "dense_12_month_coverage": false,
+      "dense_6_month_coverage": false,
+      "exact_high_venue_resolution_rate": 0.1771,
+      "exact_high_venue_resolutions": 17,
+      "historical_performances": 96,
+      "market": "Austin, TX",
+      "months_of_temporal_depth": 15.6,
+      "newest_event_date": "2026-08-29",
+      "oldest_event_date": "2025-06-07",
+      "unique_artists": 14,
+      "unique_resolved_venues": 2
+    },
+    {
+      "additional_relationships": 22,
+      "candidate_venues": 12,
+      "dense_12_month_coverage": false,
+      "dense_6_month_coverage": false,
+      "exact_high_venue_resolution_rate": 0.7119,
+      "exact_high_venue_resolutions": 42,
+      "historical_performances": 59,
+      "market": "Baltimore, MD",
+      "months_of_temporal_depth": 34.3,
+      "newest_event_date": "2026-07-18",
+      "oldest_event_date": "2023-11-14",
+      "unique_artists": 18,
+      "unique_resolved_venues": 2
+    },
+    {
+      "additional_relationships": 22,
+      "candidate_venues": 18,
+      "dense_12_month_coverage": false,
+      "dense_6_month_coverage": false,
+      "exact_high_venue_resolution_rate": 0.4286,
+      "exact_high_venue_resolutions": 30,
+      "historical_performances": 70,
+      "market": "Boston, MA",
+      "months_of_temporal_depth": 27.7,
+      "newest_event_date": "2026-08-02",
+      "oldest_event_date": "2024-06-04",
+      "unique_artists": 19,
+      "unique_resolved_venues": 2
+    },
+    {
+      "additional_relationships": 26,
+      "candidate_venues": 12,
+      "dense_12_month_coverage": false,
+      "dense_6_month_coverage": false,
+      "exact_high_venue_resolution_rate": 0.8485,
+      "exact_high_venue_resolutions": 28,
+      "historical_performances": 33,
+      "market": "Buffalo, NY",
+      "months_of_temporal_depth": 39.0,
+      "newest_event_date": "2026-09-17",
+      "oldest_event_date": "2023-06-26",
+      "unique_artists": 23,
+      "unique_resolved_venues": 2
+    },
+    {
+      "additional_relationships": 69,
+      "candidate_venues": 53,
+      "dense_12_month_coverage": true,
+      "dense_6_month_coverage": true,
+      "exact_high_venue_resolution_rate": 0.432,
+      "exact_high_venue_resolutions": 73,
+      "historical_performances": 169,
+      "market": "Chicago, IL",
+      "months_of_temporal_depth": 261.2,
+      "newest_event_date": "2026-09-21",
+      "oldest_event_date": "2004-12-17",
+      "unique_artists": 43,
+      "unique_resolved_venues": 6
+    },
+    {
+      "additional_relationships": 3,
+      "candidate_venues": 15,
+      "dense_12_month_coverage": false,
+      "dense_6_month_coverage": false,
+      "exact_high_venue_resolution_rate": 0.1429,
+      "exact_high_venue_resolutions": 5,
+      "historical_performances": 35,
+      "market": "Cleveland, OH",
+      "months_of_temporal_depth": 10.9,
+      "newest_event_date": "2026-07-18",
+      "oldest_event_date": "2025-10-28",
+      "unique_artists": 3,
+      "unique_resolved_venues": 2
+    },
+    {
+      "additional_relationships": 38,
+      "candidate_venues": 21,
+      "dense_12_month_coverage": true,
+      "dense_6_month_coverage": true,
+      "exact_high_venue_resolution_rate": 0.5125,
+      "exact_high_venue_resolutions": 41,
+      "historical_performances": 80,
+      "market": "Dallas, TX",
+      "months_of_temporal_depth": 105.2,
+      "newest_event_date": "2026-09-04",
+      "oldest_event_date": "2017-12-17",
+      "unique_artists": 29,
+      "unique_resolved_venues": 3
+    },
+    {
+      "additional_relationships": 30,
+      "candidate_venues": 26,
+      "dense_12_month_coverage": true,
+      "dense_6_month_coverage": true,
+      "exact_high_venue_resolution_rate": 0.5417,
+      "exact_high_venue_resolutions": 39,
+      "historical_performances": 72,
+      "market": "Detroit, MI",
+      "months_of_temporal_depth": 216.5,
+      "newest_event_date": "2026-08-10",
+      "oldest_event_date": "2008-09-07",
+      "unique_artists": 25,
+      "unique_resolved_venues": 3
+    },
+    {
+      "additional_relationships": 62,
+      "candidate_venues": 41,
+      "dense_12_month_coverage": true,
+      "dense_6_month_coverage": true,
+      "exact_high_venue_resolution_rate": 0.3916,
+      "exact_high_venue_resolutions": 65,
+      "historical_performances": 166,
+      "market": "Los Angeles, CA",
+      "months_of_temporal_depth": 99.0,
+      "newest_event_date": "2026-09-18",
+      "oldest_event_date": "2018-06-24",
+      "unique_artists": 48,
+      "unique_resolved_venues": 3
+    },
+    {
+      "additional_relationships": 51,
+      "candidate_venues": 24,
+      "dense_12_month_coverage": true,
+      "dense_6_month_coverage": true,
+      "exact_high_venue_resolution_rate": 0.5421,
+      "exact_high_venue_resolutions": 58,
+      "historical_performances": 107,
+      "market": "Nashville, TN",
+      "months_of_temporal_depth": 34.3,
+      "newest_event_date": "2026-09-17",
+      "oldest_event_date": "2023-11-14",
+      "unique_artists": 35,
+      "unique_resolved_venues": 3
+    },
+    {
+      "additional_relationships": 38,
+      "candidate_venues": 51,
+      "dense_12_month_coverage": true,
+      "dense_6_month_coverage": true,
+      "exact_high_venue_resolution_rate": 0.4143,
+      "exact_high_venue_resolutions": 58,
+      "historical_performances": 140,
+      "market": "New York, NY",
+      "months_of_temporal_depth": 113.1,
+      "newest_event_date": "2026-07-25",
+      "oldest_event_date": "2017-04-21",
+      "unique_artists": 22,
+      "unique_resolved_venues": 3
+    },
+    {
+      "additional_relationships": 7,
+      "candidate_venues": 3,
+      "dense_12_month_coverage": false,
+      "dense_6_month_coverage": false,
+      "exact_high_venue_resolution_rate": 1.0,
+      "exact_high_venue_resolutions": 8,
+      "historical_performances": 8,
+      "market": "Newark, NJ",
+      "months_of_temporal_depth": 24.5,
+      "newest_event_date": "2026-07-21",
+      "oldest_event_date": "2024-09-09",
+      "unique_artists": 7,
+      "unique_resolved_venues": 1
+    },
+    {
+      "additional_relationships": 24,
+      "candidate_venues": 28,
+      "dense_12_month_coverage": true,
+      "dense_6_month_coverage": true,
+      "exact_high_venue_resolution_rate": 0.449,
+      "exact_high_venue_resolutions": 44,
+      "historical_performances": 98,
+      "market": "Philadelphia, PA",
+      "months_of_temporal_depth": 31.2,
+      "newest_event_date": "2026-07-30",
+      "oldest_event_date": "2024-02-16",
+      "unique_artists": 20,
+      "unique_resolved_venues": 3
+    },
+    {
+      "additional_relationships": 7,
+      "candidate_venues": 15,
+      "dense_12_month_coverage": false,
+      "dense_6_month_coverage": false,
+      "exact_high_venue_resolution_rate": 0.4,
+      "exact_high_venue_resolutions": 14,
+      "historical_performances": 35,
+      "market": "Pittsburgh, PA",
+      "months_of_temporal_depth": 27.7,
+      "newest_event_date": "2026-06-05",
+      "oldest_event_date": "2024-06-02",
+      "unique_artists": 7,
+      "unique_resolved_venues": 1
+    },
+    {
+      "additional_relationships": 14,
+      "candidate_venues": 13,
+      "dense_12_month_coverage": false,
+      "dense_6_month_coverage": false,
+      "exact_high_venue_resolution_rate": 0.5,
+      "exact_high_venue_resolutions": 21,
+      "historical_performances": 42,
+      "market": "Richmond, VA",
+      "months_of_temporal_depth": 27.1,
+      "newest_event_date": "2026-09-15",
+      "oldest_event_date": "2024-06-22",
+      "unique_artists": 12,
+      "unique_resolved_venues": 3
+    },
+    {
+      "additional_relationships": 50,
+      "candidate_venues": 30,
+      "dense_12_month_coverage": true,
+      "dense_6_month_coverage": true,
+      "exact_high_venue_resolution_rate": 0.6598,
+      "exact_high_venue_resolutions": 64,
+      "historical_performances": 97,
+      "market": "San Francisco, CA",
+      "months_of_temporal_depth": 81.2,
+      "newest_event_date": "2026-09-10",
+      "oldest_event_date": "2019-12-18",
+      "unique_artists": 39,
+      "unique_resolved_venues": 3
+    },
+    {
+      "additional_relationships": 35,
+      "candidate_venues": 25,
+      "dense_12_month_coverage": false,
+      "dense_6_month_coverage": false,
+      "exact_high_venue_resolution_rate": 0.4505,
+      "exact_high_venue_resolutions": 41,
+      "historical_performances": 91,
+      "market": "Seattle, WA",
+      "months_of_temporal_depth": 30.6,
+      "newest_event_date": "2026-09-10",
+      "oldest_event_date": "2024-03-07",
+      "unique_artists": 30,
+      "unique_resolved_venues": 2
+    },
+    {
+      "additional_relationships": 40,
+      "candidate_venues": 21,
+      "dense_12_month_coverage": true,
+      "dense_6_month_coverage": true,
+      "exact_high_venue_resolution_rate": 0.5806,
+      "exact_high_venue_resolutions": 54,
+      "historical_performances": 93,
+      "market": "Washington, DC",
+      "months_of_temporal_depth": 50.1,
+      "newest_event_date": "2026-09-20",
+      "oldest_event_date": "2022-07-23",
+      "unique_artists": 32,
+      "unique_resolved_venues": 3
+    }
+  ],
+  "metadata": {
+    "as_of": "2026-09-24",
+    "dense_market_definition": ">=20 additional relationships, >=5 artists, >=3 resolved venues using a conservative aggregate-only lower bound, and >=5 candidate venues",
+    "generated_at_utc": "2026-09-24T04:46:41.591476+00:00",
+    "max_pages_per_artist": 8,
+    "read_only": true,
+    "server_batches": 49,
+    "transient_event_data_deleted_after_aggregation": true
+  },
+  "permission_required_before_storage_or_training": true,
+  "projected_full_coverage": {
+    "allowance_note": "Probe used 424 of the 500-request safety cap; 6 HTTP 429 responses were handled conservatively.",
+    "average_candidate_venues_per_represented_market": 24.63,
+    "average_historical_events_per_represented_market": 30.84,
+    "candidate_set_viable": true,
+    "combined_usable_historical_relationships": 9629,
+    "current_allowance_appears_sufficient": true,
+    "eligible_musicbrainz_mapped_artists": 193,
+    "estimated_requests_for_all_current_mbid_artists": 424,
+    "estimated_runtime_minutes_current_mbid_artists": 7.1,
+    "projected_additional_usable_relationships": 586,
+    "projected_held_out_relationships": 8531,
+    "projected_markets_with_dense_12_month_coverage": 10,
+    "projected_markets_with_dense_6_month_coverage": 10,
+    "projected_pre_july_2026_training_relationships": 510,
+    "theoretical_requests_if_all_artists_had_mbids": 12127
+  },
+  "provider_overlap_summary": [
+    {
+      "category": "already_known",
+      "performance_count": 159
+    },
+    {
+      "category": "already_known_jambase",
+      "performance_count": 70
+    },
+    {
+      "category": "already_known_musicbrainz",
+      "performance_count": 0
+    },
+    {
+      "category": "already_known_ticketmaster",
+      "performance_count": 150
+    },
+    {
+      "category": "ambiguous",
+      "performance_count": 6570
+    },
+    {
+      "category": "likely_duplicate",
+      "performance_count": 85
+    },
+    {
+      "category": "setlist_only",
+      "performance_count": 586
+    }
+  ],
+  "request_metrics": {
+    "artists_at_page_cap": 52,
+    "average_pages_per_artist": 2.14,
+    "average_records_per_request": 17.646,
+    "hard_request_cap": 500,
+    "maximum_pages_for_one_artist": 8,
+    "not_found": 11,
+    "rate_limit_headers": {},
+    "request_cap_respected": true,
+    "requests": 424,
+    "retries": 6,
+    "status_counts": {
+      "200": 407,
+      "404": 11,
+      "429": 6
+    },
+    "throttles": 6,
+    "unaggregated_successful_requests": 5
+  },
+  "sample_profile": {
+    "established_or_sparse": {
+      "established": 102,
+      "sparse": 91
+    },
+    "history_bands": {
+      "high": 45,
+      "medium": 148
+    },
+    "provider_bias": {
+      "balanced": 48,
+      "jambase-heavy": 32,
+      "ticketmaster-heavy": 113
+    },
+    "represented_markets_lower_bound": 4,
+    "represented_primary_genres_lower_bound": 4
+  },
+  "summary": {
+    "additional_historical_relationships": 586,
+    "additional_pre_july_2026_relationships": 510,
+    "artist_query_failures": 0,
+    "artists_queried": 193,
+    "artists_sampled": 193,
+    "artists_with_history": 182,
+    "chronology_order_violations": 0,
+    "current_market_venue_resolution_rate": 0.4617,
+    "exact_high_venue_resolutions": 742,
+    "newest_event_date": "2026-09-23",
+    "oldest_event_date": "1966-08-13",
+    "performances_in_current_markets": 1607,
+    "performances_outside_current_markets": 5793,
+    "performances_with_unresolved_market": 0,
+    "september_2025_through_june_2026_relationships": 259,
+    "total_performance_records_returned": 7482,
+    "truncated_artists": 52,
+    "unique_historical_performances": 7400
+  }
+}

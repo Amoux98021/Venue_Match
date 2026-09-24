@@ -1,0 +1,20 @@
+market,historical_performances,additional_relationships,unique_artists,unique_resolved_venues,oldest_event_date,newest_event_date,exact_high_venue_resolutions,candidate_venues,months_of_temporal_depth,exact_high_venue_resolution_rate,dense_6_month_coverage,dense_12_month_coverage
+"Atlanta, GA",116,32,26,3,2024-02-08,2026-09-16,40,34,31.5,0.3448,True,True
+"Austin, TX",96,16,14,2,2025-06-07,2026-08-29,17,26,15.6,0.1771,False,False
+"Baltimore, MD",59,22,18,2,2023-11-14,2026-07-18,42,12,34.3,0.7119,False,False
+"Boston, MA",70,22,19,2,2024-06-04,2026-08-02,30,18,27.7,0.4286,False,False
+"Buffalo, NY",33,26,23,2,2023-06-26,2026-09-17,28,12,39.0,0.8485,False,False
+"Chicago, IL",169,69,43,6,2004-12-17,2026-09-21,73,53,261.2,0.432,True,True
+"Cleveland, OH",35,3,3,2,2025-10-28,2026-07-18,5,15,10.9,0.1429,False,False
+"Dallas, TX",80,38,29,3,2017-12-17,2026-09-04,41,21,105.2,0.5125,True,True
+"Detroit, MI",72,30,25,3,2008-09-07,2026-08-10,39,26,216.5,0.5417,True,True
+"Los Angeles, CA",166,62,48,3,2018-06-24,2026-09-18,65,41,99.0,0.3916,True,True
+"Nashville, TN",107,51,35,3,2023-11-14,2026-09-17,58,24,34.3,0.5421,True,True
+"New York, NY",140,38,22,3,2017-04-21,2026-07-25,58,51,113.1,0.4143,True,True
+"Newark, NJ",8,7,7,1,2024-09-09,2026-07-21,8,3,24.5,1.0,False,False
+"Philadelphia, PA",98,24,20,3,2024-02-16,2026-07-30,44,28,31.2,0.449,True,True
+"Pittsburgh, PA",35,7,7,1,2024-06-02,2026-06-05,14,15,27.7,0.4,False,False
+"Richmond, VA",42,14,12,3,2024-06-22,2026-09-15,21,13,27.1,0.5,False,False
+"San Francisco, CA",97,50,39,3,2019-12-18,2026-09-10,64,30,81.2,0.6598,True,True
+"Seattle, WA",91,35,30,2,2024-03-07,2026-09-10,41,25,30.6,0.4505,False,False
+"Washington, DC",93,40,32,3,2022-07-23,2026-09-20,54,21,50.1,0.5806,True,True

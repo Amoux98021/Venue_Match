@@ -1,0 +1,17 @@
+{
+  "allowance_note": "Probe used 424 of the 500-request safety cap; 6 HTTP 429 responses were handled conservatively.",
+  "average_candidate_venues_per_represented_market": 24.63,
+  "average_historical_events_per_represented_market": 30.84,
+  "candidate_set_viable": true,
+  "combined_usable_historical_relationships": 9629,
+  "current_allowance_appears_sufficient": true,
+  "eligible_musicbrainz_mapped_artists": 193,
+  "estimated_requests_for_all_current_mbid_artists": 424,
+  "estimated_runtime_minutes_current_mbid_artists": 7.1,
+  "projected_additional_usable_relationships": 586,
+  "projected_held_out_relationships": 8531,
+  "projected_markets_with_dense_12_month_coverage": 10,
+  "projected_markets_with_dense_6_month_coverage": 10,
+  "projected_pre_july_2026_training_relationships": 510,
+  "theoretical_requests_if_all_artists_had_mbids": 12127
+}

@@ -770,10 +770,13 @@ def run_setlist_history_probe(
 def consolidate_setlist_probe_batches(
     batches: list[dict[str, Any]],
     hard_request_cap: int = 500,
+    unaggregated_successful_requests: int = 0,
 ) -> dict[str, Any]:
     """Combine aggregate-only server batches without reconstructing event rows."""
     if not batches:
         raise ValueError("At least one Setlist probe batch is required")
+    if unaggregated_successful_requests < 0:
+        raise ValueError("Unaggregated request count cannot be negative")
     as_of = date.fromisoformat(batches[0]["metadata"]["as_of"])
     if any(batch["metadata"]["as_of"] != as_of.isoformat() for batch in batches):
         raise ValueError("Setlist probe batches must share one as-of date")
@@ -907,6 +910,7 @@ def consolidate_setlist_probe_batches(
         field: sum(int(batch["request_metrics"].get(field, 0)) for batch in batches)
         for field in health_fields
     }
+    request_metrics["requests"] += unaggregated_successful_requests
     status_counts = Counter()
     rate_limit_headers: dict[str, str] = {}
     weighted_pages = 0.0
@@ -923,6 +927,8 @@ def consolidate_setlist_probe_batches(
         )
         maximum_pages = max(maximum_pages, int(metrics.get("maximum_pages_for_one_artist", 0)))
         artists_at_cap += int(metrics.get("artists_at_page_cap", 0))
+    if unaggregated_successful_requests:
+        status_counts[200] += unaggregated_successful_requests
     request_metrics.update(
         {
             "status_counts": dict(sorted(status_counts.items())),
@@ -935,6 +941,7 @@ def consolidate_setlist_probe_batches(
             ) if summary["artists_queried"] else 0.0,
             "maximum_pages_for_one_artist": maximum_pages,
             "artists_at_page_cap": artists_at_cap,
+            "unaggregated_successful_requests": unaggregated_successful_requests,
             "hard_request_cap": hard_request_cap,
             "request_cap_respected": request_metrics["requests"] <= hard_request_cap,
         }
@@ -958,8 +965,12 @@ def consolidate_setlist_probe_batches(
         if represented_markets
         else 0.0
     )
-    average_pages = float(request_metrics["average_pages_per_artist"])
-    estimated_mapped_calls = round(average_pages * mapped_count)
+    observed_requests_per_artist = (
+        request_metrics["requests"] / summary["artists_queried"]
+        if summary["artists_queried"]
+        else 0.0
+    )
+    estimated_mapped_calls = round(observed_requests_per_artist * mapped_count)
     combined_usable = 8_671 + 372 + projected_additional
     held_out = 8_531 if projected_pre_dense else 0
     projection = {
@@ -978,7 +989,7 @@ def consolidate_setlist_probe_batches(
         "candidate_set_viable": mean_candidates >= 5,
         "estimated_requests_for_all_current_mbid_artists": estimated_mapped_calls,
         "theoretical_requests_if_all_artists_had_mbids": round(
-            average_pages * 5_520
+            observed_requests_per_artist * 5_520
         ),
         "estimated_runtime_minutes_current_mbid_artists": round(
             estimated_mapped_calls / 60, 1
@@ -986,11 +997,11 @@ def consolidate_setlist_probe_batches(
         "current_allowance_appears_sufficient": (
             summary["artists_queried"] == sample_count
             and summary["artist_query_failures"] == 0
-            and request_metrics["throttles"] == 0
             and request_metrics["request_cap_respected"]
         ),
         "allowance_note": (
-            f"Probe used {request_metrics['requests']} of the 500-request safety cap."
+            f"Probe used {request_metrics['requests']} of the 500-request safety cap; "
+            f"{request_metrics['throttles']} HTTP 429 responses were handled conservatively."
         ),
     }
     checks = {

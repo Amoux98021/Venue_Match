@@ -25,11 +25,20 @@ def main() -> None:
         type=Path,
         default=Path("reports/setlist_history_probe"),
     )
+    parser.add_argument(
+        "--unaggregated-successful-requests",
+        type=int,
+        default=0,
+        help="Successful provider calls consumed before a batch aggregate was emitted.",
+    )
     args = parser.parse_args()
     batches = json.loads(args.batches.read_text(encoding="utf-8"))
     if not isinstance(batches, list):
         raise ValueError("Batch input must be a JSON list")
-    result = consolidate_setlist_probe_batches(batches)
+    result = consolidate_setlist_probe_batches(
+        batches,
+        unaggregated_successful_requests=args.unaggregated_successful_requests,
+    )
     write_setlist_probe_artifacts(result, args.output_dir)
     print(
         json.dumps(

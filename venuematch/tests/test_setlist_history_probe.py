@@ -310,11 +310,16 @@ def test_aggregate_batches_consolidate_without_event_rows(tmp_path) -> None:
     first["metadata"].update({"batch_offset": 0, "total_sample_size": 2})
     second["metadata"].update({"batch_offset": 1, "total_sample_size": 2})
 
-    result = consolidate_setlist_probe_batches([first, second])
+    result = consolidate_setlist_probe_batches(
+        [first, second],
+        unaggregated_successful_requests=5,
+    )
     write_setlist_probe_artifacts(result, tmp_path)
 
     assert result["summary"]["artists_sampled"] == 2
     assert result["summary"]["unique_historical_performances"] == 2
-    assert result["request_metrics"]["requests"] == 2
+    assert result["request_metrics"]["requests"] == 7
+    assert result["request_metrics"]["status_counts"][200] == 7
+    assert result["request_metrics"]["unaggregated_successful_requests"] == 5
     assert result["request_metrics"]["request_cap_respected"] is True
     assert "setlist_id" not in json.dumps(result)
