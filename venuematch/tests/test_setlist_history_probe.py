@@ -61,6 +61,33 @@ def test_venue_resolution_by_name_city_and_fuzzy_market() -> None:
     assert fuzzy == {"venue_id": "venue-1", "match_quality": "medium"}
 
 
+def test_venue_resolution_handles_equal_fuzzy_scores() -> None:
+    venues = [
+        {
+            "id": "venue-a",
+            "name": "Main Hall East",
+            "city": "Washington",
+            "state": "DC",
+            "market": "Washington, DC",
+        },
+        {
+            "id": "venue-b",
+            "name": "Main Hall West",
+            "city": "Washington",
+            "state": "DC",
+            "market": "Washington, DC",
+        },
+    ]
+
+    result = resolve_venue(
+        {"venue_name": "Main Hall", "city": "Washington"},
+        "Washington, DC",
+        venues,
+    )
+
+    assert result == {"venue_id": None, "match_quality": "unresolved"}
+
+
 def test_overlap_detection() -> None:
     row = {
         "event_date": "2026-01-10",

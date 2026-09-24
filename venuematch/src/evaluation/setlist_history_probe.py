@@ -344,11 +344,14 @@ def resolve_venue(
 
     fuzzy = sorted(
         (
-            SequenceMatcher(None, name, normalize_entity(row["name"])).ratio(),
-            row,
-        )
-        for row in candidates
-        if name
+            (
+                SequenceMatcher(None, name, normalize_entity(row["name"])).ratio(),
+                row,
+            )
+            for row in candidates
+            if name
+        ),
+        key=lambda item: (item[0], str(item[1]["id"])),
     )
     fuzzy = [item for item in fuzzy if item[0] >= 0.90]
     if fuzzy and (len(fuzzy) == 1 or fuzzy[-1][0] > fuzzy[-2][0]):
