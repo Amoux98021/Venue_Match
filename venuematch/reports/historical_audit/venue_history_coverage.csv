@@ -1,0 +1,470 @@
+id,name,city,state,historical_booking_count,genre_history_count,has_capacity,has_genre_history,has_coordinates,has_resolved_market
+venue_31eefdec70fc5096bf6113b193bd1f9a,Mercury Lounge,New York,NY,324,20,True,True,False,True
+venue_8ccb4766d80751ef9e810fe4a03c79b2,Birdland Jazz Club,New York,NY,243,2,True,True,False,True
+venue_7cba0912c7ce538ebf207c546f35b561,Birdland Theater,New York,NY,167,4,True,True,False,True
+venue_892509c4c54a52e9ac5c3131a0748ffa,Blue Note Jazz Club,New York,NY,154,17,True,True,False,True
+venue_de84c46f201355799edd42a90bc1acac,Madison Square Garden,New York,NY,148,14,True,True,False,True
+venue_2cf82a5316c953a8abca86b10f4f6e4c,The Foundry,Philadelphia,PA,126,16,True,True,False,True
+venue_c8a6caa2b0ee5726bcd957ed4815772f,Union Stage,Washington,DC,119,18,True,True,False,True
+venue_21650d69c8795480957b40ac202cde80,9:30 CLUB,Washington,DC,116,21,True,True,False,True
+venue_f38cdcf8f66c5dd68f1d6be083a42bf4,The Anthem,Washington,DC,116,22,True,True,False,True
+venue_569025f1990d55da9953692bc97b64be,The Rooftop at Pier 17,New York,NY,109,25,True,True,False,True
+venue_742bad6fda7f583b86ae7832a10d3b5e,The Atlantis,Washington,DC,102,21,True,True,False,True
+venue_57588640f8c354b4b1c98865eeb77664,Bowery Ballroom,New York,NY,95,19,True,True,False,True
+venue_a92520ce0b0e50e3b23f2863312bb193,MGM Music Hall at Fenway,Boston,MA,89,22,True,True,False,True
+venue_ef90d9e3cdac5c6ea4803e847879604e,Brighton Music Hall presented by Citizens,Boston,MA,88,19,True,True,False,True
+venue_ad767fe4d06159a2903aa2fedb21c9f9,The Moroccan Lounge,Los Angeles,CA,88,11,True,True,False,True
+venue_41403626a1e05c0ea0a12a99284d4d29,Echostage,Washington,DC,84,6,True,True,False,True
+venue_0950497125f05c899e92886c7854f8f0,MilkBoy Philadelphia,Philadelphia,PA,83,21,True,True,False,True
+venue_a5a6bd021b485f348e3db5455052f9b7,The Fillmore Philadelphia,Philadelphia,PA,83,19,True,True,False,True
+venue_ca615294ac9c50e4b64ace1e8ef8f37a,The Masquerade - Purgatory,Atlanta,GA,81,13,True,True,False,True
+venue_ea65775386fc592b90704bac950d1ecc,Gramercy Theatre,New York,NY,78,20,True,True,False,True
+venue_c1364959355c59f087807bf5a4962904,Citizens House of Blues Boston,Boston,MA,73,23,True,True,False,True
+venue_df8f6616124f595cacf8816ee2a46918,Big Night Live,Boston,MA,71,17,True,True,False,True
+venue_87281a5b99705e919ea287429e455826,TD Pavilion at Highmark Mann,Philadelphia,PA,71,17,True,True,False,True
+venue_0121aad7e422589a894cfc4b1b09230f,Irving Plaza Powered By Verizon 5G,New York,NY,69,18,True,True,False,True
+venue_ba8e8c5e8a67508383f3bc4a0f5b16bc,Sony Hall,New York,NY,68,23,True,True,False,True
+venue_6bf870bd9c075520b365607670371933,3rd and Lindsley,Nashville,TN,67,9,True,True,False,True
+venue_058422887fd25e248c495060df70f518,Aisle 5,Atlanta,GA,67,20,True,True,False,True
+venue_f7840311ae5853488667de6989c7e0f0,Paradise Rock Club presented by Citizens,Boston,MA,66,19,True,True,False,True
+venue_819cc08886ba5b29841d611e5e1291b4,Midtown Green,Richmond,VA,65,7,False,True,False,True
+venue_4362328af880532183f6cf3c3b866993,Nevermore Hall,Baltimore,MD,65,16,True,True,False,True
+venue_6f41de1f767357cbafdc0476035535ac,Underground Arts,Philadelphia,PA,65,12,True,True,False,True
+venue_b2bd8e0316a95b67ba214ec0b403d84a,Ryman Auditorium,Nashville,TN,62,11,True,True,False,True
+venue_9565f8475e295fb08df877d63f680393,The Masquerade - Hell,Atlanta,GA,62,17,True,True,False,True
+venue_634b13d711375106b29ee5e61a9ede8b,Brooklyn Bowl Philadelphia,Philadelphia,PA,60,17,True,True,False,True
+venue_4fc71f1ade1058a3ad0713a55721b659,Dell Music Center,Philadelphia,PA,60,9,True,True,False,True
+venue_c25b4015870c5d10adef719e2316c2ff,The Masquerade - Heaven,Atlanta,GA,60,13,True,True,False,True
+venue_d2248be5dc7f502b9d5e7cf62de7fc37,PIEDMONT PARK,Atlanta,GA,59,0,False,False,False,True
+venue_82bd575a4587539da9d5b4a17c825cbf,State Farm Arena,Atlanta,GA,59,21,True,True,False,True
+venue_1aeba229e07d5791b90971a1a63a0ee2,The Masquerade  - Altar,Atlanta,GA,59,13,True,True,False,True
+venue_c29298e61d275dc4af645491a564b681,The Met Presented by Highmark,Philadelphia,PA,59,16,True,True,False,True
+venue_35b9ceea16675c47ba9880f11a18cc9e,Blue Note Los Angeles,Los Angeles,CA,56,6,True,True,False,True
+venue_74e54e1d00965fdbb32d50204eccaac7,Center Stage Theater,Atlanta,GA,56,20,True,True,False,True
+venue_53fae28951be5b0cb4a5e929342f481e,House of Blues Chicago,Chicago,IL,56,10,True,True,False,True
+venue_a13b8e45fe9a5718991f2a6c8ea3731e,Leader Bank Pavilion,Boston,MA,56,16,True,True,False,True
+venue_70ce83c4dc3958a888cf0a5013c29d68,Maymont,Richmond,VA,56,9,True,True,False,True
+venue_3c7834d294225c2f8f36bb97bf9f5f82,Stage AE,Pittsburgh,PA,54,19,True,True,False,True
+venue_f012da93e7925a238190a10f699987ac,Union Transfer,Philadelphia,PA,54,18,True,True,False,True
+venue_13ae77e0998b51fe8f273a43b9891cea,Vinyl,Atlanta,GA,54,19,True,True,False,True
+venue_bf9c366eda9356549c09951f521f08e1,Coca-Cola Roxy,Atlanta,GA,53,21,True,True,False,True
+venue_3d4c5ae6dbab587890ba323d49d5eba1,Capital One City Parks Foundation SummerStage,New York,NY,52,13,True,True,False,True
+venue_6599aa7e92425066b253e4aa72187af5,Brooklyn Bowl Nashville,Nashville,TN,51,10,True,True,False,True
+venue_5bad771f530354208af8f4e3893489ee,Allianz Amphitheater at Riverfront,Richmond,VA,49,16,True,True,False,True
+venue_d55cfd177fe95e5eb75075bcebd02f3a,Ottobar,Baltimore,MD,48,9,True,True,False,True
+venue_c9f5ef9e5dae53eea753d32c805b7337,Buckhead Theatre,Atlanta,GA,47,19,True,True,False,True
+venue_2e325686cccf5788ac9b729b07c767ab,Iridium,New York,NY,46,8,True,True,False,True
+venue_9fd0ad4bd4635e4e949b875706b2d642,The Aretha Franklin Amphitheatre,Detroit,MI,46,6,True,True,False,True
+venue_508b19ec5a1c5342900138a5892c7c73,Theatre of Living Arts,Philadelphia,PA,46,14,True,True,False,True
+venue_d58599f877cc55f6ae0c80d10382cb23,Randalls Island,New York,NY,45,4,False,True,False,True
+venue_cd7e43f7226f5aa88ed4d7eeeb1b1731,Synovus Bank Amphitheater at Chastain Park,Atlanta,GA,45,14,True,True,False,True
+venue_18bc49ae308258a49b9ac008d934d1b6,Teragram Ballroom,Los Angeles,CA,45,6,True,True,False,True
+venue_42e2e4fbfc6b5ab4be48c9cd83710238,Radio City Music Hall,New York,NY,42,20,True,True,False,True
+venue_bf16e43377135e75868292d603427563,The National,Richmond,VA,42,24,True,True,False,True
+venue_be90170bada05ad9846dcb8204eb6b47,House of Blues Cleveland,Cleveland,OH,41,11,True,True,False,True
+venue_be728423be4959029805cb63434af9c7,Huntington Bank Pavilion at Northerly Island,Chicago,IL,41,7,True,True,False,True
+venue_6e0ffce6bfb1559ea746840f7603709b,Canal Club,Richmond,VA,40,8,True,True,False,True
+venue_53fe58ac07475a37b847086cabe24e0a,Lincoln Financial Field,Philadelphia,PA,40,9,True,True,False,True
+venue_5ee5217347b452f4a49540b0a01ece65,Pier Six Pavilion,Baltimore,MD,40,16,True,True,False,True
+venue_0bd6ee7b997f5c468bb1bd4229a7b729,Webster Hall,New York,NY,40,18,True,True,False,True
+venue_c25a630046905a639c0abfad26a89b6e,Echoplex,Los Angeles,CA,39,6,True,True,False,True
+venue_b9cf8e56f1315f7c9982fd650a542c69,Grand Ole Opry House,Nashville,TN,39,1,True,True,False,True
+venue_c4bb7dc6484a597f9a2caeea44178a4d,Riverfront Jazz Fest at Fair Park,Dallas,TX,39,3,False,True,False,True
+venue_55f3912230815ccea1081316113f7f6b,The Echo,Los Angeles,CA,39,8,True,True,False,True
+venue_8ff9b90311d055b69da64ab0fb70418f,Buffalo Iron Works,Buffalo,NY,38,15,True,True,False,True
+venue_71e12df42373508cafd78e4a3676c638,Racket NYC,New York,NY,38,12,True,True,False,True
+venue_6c837e54d5c354cc87b3b3b3b1a0a163,The Fillmore Detroit,Detroit,MI,38,5,True,True,False,True
+venue_b597304c4b4e5f919b667a45e9471258,The Regent Theater,Los Angeles,CA,38,7,False,True,False,True
+venue_5ceafad047285fbaab8d5f25a7109830,Warner Theatre,Washington,DC,38,14,True,True,False,True
+venue_9f93fbe5e5ce5c08b11764dd6331e5b3,Baltimore Soundstage,Baltimore,MD,37,14,True,True,False,True
+venue_9df15c22b9a35fdfbc80d41426e1295f,Dos Equis Pavilion,Dallas,TX,37,8,False,True,False,True
+venue_0c0ffe84d8be5180a1694ca7a4c608e8,Terminal West,Atlanta,GA,37,17,True,True,False,True
+venue_0fc88f22857b5477994c1ec29885151c,The Bluebird Cafe,Nashville,TN,36,7,True,True,False,True
+venue_8af6aa297791593b8656edf3b22d1a94,CFG Bank Arena,Baltimore,MD,35,17,True,True,False,True
+venue_a312c12618925ffba11daad340bc3d7e,Franklin Music Hall,Philadelphia,PA,35,13,True,True,False,True
+venue_b1ae633104aa5979a0199d64d8009083,Royale Boston,Boston,MA,35,17,True,True,False,True
+venue_b8f5c2e7ec775beba54198b86447447c,Saint Andrew's Hall,Detroit,MI,35,10,True,True,False,True
+venue_ef76604511e75e87837e6e994b9c45aa,Xfinity Mobile Arena,Philadelphia,PA,35,16,True,True,False,True
+venue_00f237d6e0b758889e432606c83640a0,Pacific Electric,Los Angeles,CA,32,4,False,True,False,True
+venue_55de353f3e2a594dab384a44550bdaf3,The Salt Shed Outdoors (Fairgrounds),Chicago,IL,32,6,True,True,False,True
+venue_80fb602e883c5e79bd52432214ad0a7a,Roadrunner-Boston,Boston,MA,31,15,True,True,False,True
+venue_8d1839608e1d52e688e8a9a902ced190,Thalia Hall,Chicago,IL,31,9,True,True,False,True
+venue_104a3802b41058cdbf8d302ec7aeedd8,Prudential Center,Newark,NJ,30,14,True,True,False,True
+venue_ae01aa68c6c056b5987f77cadd9555fa,TD Garden,Boston,MA,30,16,True,True,False,True
+venue_530e8dd3bfc3540cb368e74ece85037c,The Basement East,Nashville,TN,30,10,True,True,False,True
+venue_82890a30d4f957ac9544ec639d6aa3ea,The Fillmore,San Francisco,CA,30,7,False,True,False,True
+venue_13a5dd0e84ae581bb854bfad09956246,Aragon Ballroom,Chicago,IL,29,6,True,True,False,True
+venue_86ac5e326732588d80e3db365e197e7c,Bottom Lounge,Chicago,IL,28,6,True,True,False,True
+venue_c4c20d009cb850adb979d6b058e245b6,Emo's Austin,Austin,TX,28,7,False,True,False,True
+venue_c684adbf36b25d4199f5ea30504a4f43,Garcia's Chicago,Chicago,IL,28,8,True,True,False,True
+venue_7b0e104b19265dfa87acade9fc6c0c85,Jacobs Pavilion at Nautica,Cleveland,OH,28,5,True,True,False,True
+venue_236960e98eba5e1eb973c7309c4e2549,Nationals Park,Washington,DC,28,7,True,True,False,True
+venue_dd41fa4c950250069a0f2b14a43c203f,Terminal B At The Outer Harbor,Buffalo,NY,28,7,True,True,False,True
+venue_6cd2de689aed51fcb495ae91cd37adb2,The Belasco,Los Angeles,CA,28,5,True,True,False,True
+venue_3288cf8025b8515fa77b8fd1d85928f3,Moody Center ATX,Austin,TX,27,5,False,True,False,True
+venue_2f8ac74f240e5b56b4169a243b6852e7,Beacon Theatre,New York,NY,26,8,True,True,False,True
+venue_ad399e7b6e975d7f9b9ffac6cc27c555,Rec Room,Buffalo,NY,26,10,True,True,False,True
+venue_da1f0c56606751909ce21fff039b4fef,The Bomb Factory,Dallas,TX,26,4,False,True,False,True
+venue_fe587b7923ac59899aed7d225d4b3730,Town Hall,New York,NY,26,14,True,True,False,True
+venue_56b902a1aaa451479a6e1c7889f986cf,Night Club 101,New York,NY,25,13,True,True,False,True
+venue_7b47e3845e7d5fb59480e5561b5a6f84,Outset,Chicago,IL,25,6,True,True,False,True
+venue_195ab020749353ada7926f122f438965,The Grand (Boston),Boston,MA,25,7,True,True,False,True
+venue_e054ee6ed28d5a86b192459f930d3504,Antone's Nightclub,Austin,TX,24,11,False,True,False,True
+venue_5fa0102c9eb158218de6c74b5f96064c,Greek Theatre,Los Angeles,CA,24,7,False,True,False,True
+venue_057bdf026c785e8bbb61dad46bfb6728,House of Blues Dallas ,Dallas,TX,24,9,False,True,False,True
+venue_eedc42dedb5059da931b7f4ae530c1eb,South Side Ballroom,Dallas,TX,24,8,False,True,False,True
+venue_61bd67253deb54cab383963224cdab3a,The Echo Lounge & Music Hall,Dallas,TX,24,7,False,True,False,True
+venue_c4092be27b6b516ca8de2be9bdfbbc8d,United Center,Chicago,IL,24,6,True,True,False,True
+venue_fe59309c9c1c5b75b11ae21a7da89ab4,Atlanta Symphony Hall,Atlanta,GA,23,11,True,True,False,True
+venue_fa5b27f04f085173a9a855cf7aa70e02,Howard Theatre-DC,Washington,DC,23,13,True,True,False,True
+venue_c18d89abc64c513287aea946f4f91fbd,Nikki Lopez Philly,Philadelphia,PA,23,8,True,True,False,True
+venue_141c566c1b0850ecaca89b0f9c7876a8,The Peppermint Club,Los Angeles,CA,23,6,True,True,False,True
+venue_eb875534645a5a669af55623b8287287,Tractor,Seattle,WA,22,7,False,True,False,True
+venue_b8d3b00c138c5f0494f547978cd70fba,AM/FM Dallas,Dallas,TX,21,5,False,True,False,True
+venue_91477ef539cd539cb9368ad723c7413e,Ascend Amphitheater,Nashville,TN,21,7,True,True,False,True
+venue_470990e72fc255a3a2b226d04d5a4ea0,Cutting Room,New York,NY,21,5,True,True,False,True
+venue_280b73edc85554858ca5e62fea207b3e,Lakewood Amphitheatre,Atlanta,GA,21,3,True,True,False,True
+venue_1755710f1e9350cbb3435000d9e8842b,SILO,Dallas,TX,21,1,False,True,False,True
+venue_dc6b496a349253bda1b1aaae7714412b,The Crocodile,Seattle,WA,21,9,False,True,False,True
+venue_3c370bc221fa5bce9083135172c41afd,Agganis Arena,Boston,MA,20,10,True,True,False,True
+venue_41e9c28ac9ce58f79f8825457ea8411a,Bridgestone Arena,Nashville,TN,20,4,True,True,False,True
+venue_f697084de3e25f1289e6518673da0895,Climate Pledge Arena,Seattle,WA,20,6,False,True,False,True
+venue_09c078cb32335819b6b14e906b30fa14,Marathon Music Works,Nashville,TN,20,7,True,True,False,True
+venue_74afab5ee0165e09b7e86f34b3a48ab9,The Castro Theatre,San Francisco,CA,20,7,False,True,False,True
+venue_b6f5dbbc32d25b148ca81971f213475a,The Loft,Atlanta,GA,20,7,True,True,False,True
+venue_a0740d7b6f1a5754a72c3857fbb5b32b,Reggies Rock Club,Chicago,IL,19,4,True,True,False,True
+venue_ca3c2bb80fec5b6bba2f53d78a8ce4f5,The Showbox,Seattle,WA,19,7,False,True,False,True
+venue_8c7eaf812306503eac96ae1d7c2216d7,Foundation Room at House of Blues Chicago,Chicago,IL,18,2,False,True,False,True
+venue_0e39ec55385450b287c1465ebca5b845,Infosys Theater at Madison Square Garden,New York,NY,18,7,True,True,False,True
+venue_2d32f08a8af452a6b7e048d8465f9d26,Pacha New York,New York,NY,18,3,True,True,False,True
+venue_f66374c5ca7f5c2fa889cc56b05c5749,Tabernacle,Atlanta,GA,18,15,True,True,False,True
+venue_a3a7bc9cb3485fae94431a2cd65b782d,The Bellwether,Los Angeles,CA,18,4,True,True,False,True
+venue_7fd41a874c305546968f3cf960605db7,The Eastern-GA,Atlanta,GA,18,14,True,True,False,True
+venue_91d2fc03abdd5c3a827fbc28db45d726,The Salt Shed Indoors (Shed),Chicago,IL,18,7,True,True,False,True
+venue_a5595176fa01560ea4939862ad7b9cb7,Exit/In,Nashville,TN,17,6,True,True,False,True
+venue_207ad94e05b65089aa2938d93ca2e112,Neptune Theatre,Seattle,WA,17,7,False,True,False,True
+venue_c13800179b48563aa31028c7857b3411,The Cambridge Room at House Of Blues,Dallas,TX,17,7,False,True,False,True
+venue_0761271568125f37a7f7c77ef906ed43,The Liberty Belle - Rocks Off Concert Cruise,New York,NY,17,8,True,True,False,True
+venue_b20b637d4b205d6695383a4447372ecf,The Pinnacle - TN,Nashville,TN,17,7,True,True,False,True
+venue_bd06759b205e52e58f3216e4e8973dbf,Warfield,San Francisco,CA,17,4,False,True,False,True
+venue_dda9b662248155fcbe5ce5a27e4004da,August Hall,San Francisco,CA,16,7,False,True,False,True
+venue_10c58db8e94b561b892c774b019e639e,Lucinda's,New York,NY,16,8,True,True,False,True
+venue_2b161e5a2040516e82b6abd59e81f1ce,Moody Amphitheater,Austin,TX,16,6,False,True,False,True
+venue_d36de1e1d8575f60a53384f48b3c6e2a,NOTO,Philadelphia,PA,16,5,True,True,False,True
+venue_81d87f48869f546f8b33a91602a08936,Petersen Events Center,Pittsburgh,PA,16,7,True,True,False,True
+venue_297b896222a65e1a8b255c01814d163a,The Chapel,San Francisco,CA,16,6,False,True,False,True
+venue_8aabf53f69e15d2e87e4418c1f3ab266,The Chicago Theatre,Chicago,IL,16,2,True,True,False,True
+venue_c914c20173b35b7db632af3f601e8ae9,Cafe Du Nord,San Francisco,CA,15,8,False,True,False,True
+venue_19aa1e6914275523b9f232cd54103ec7,Germania Insurance Amphitheater,Austin,TX,15,4,False,True,False,True
+venue_8a437646efb854f79a372b801dbb90d9,Nectar Lounge,Seattle,WA,15,2,False,True,False,True
+venue_401b9e28dce05e3f87866c15d6054f17,Showbox SODO,Seattle,WA,15,3,False,True,False,True
+venue_caf7efc5fff25965af2f1805d90e3bc2,Lincoln Theatre,Washington,DC,14,15,True,True,False,True
+venue_f5edd5428100514a8a3613b0a3692e72,The Regency Ballroom,San Francisco,CA,14,3,False,True,False,True
+venue_21c263d9cb84538d8dbdd9e38c3879fa,Beachland Tavern,Cleveland,OH,13,7,True,True,False,True
+venue_5e452d8853f05ee6ba97cd437628a079,Buffalo RiverWorks,Buffalo,NY,13,11,True,True,False,True
+venue_1651cf3b4f235873800283802e8112a9,Electric City,Buffalo,NY,13,15,True,True,False,True
+venue_2eb091d0a2fe5cfb826a8498cc3309e9,Hollywood Bowl,Los Angeles,CA,13,5,False,True,False,True
+venue_c0eb6257b9105c25bd4099d7e6cf518e,Howard Theatre,Washington,DC,13,8,True,True,False,True
+venue_98f3b57569985df5b08ed54392721d74,PhilaMOCA,Philadelphia,PA,13,4,True,True,False,True
+venue_54adf47defbf53e8a3d3b35f0fb05d81,Soldier Field,Chicago,IL,13,4,True,True,False,True
+venue_0d916dba4aad5c1bbe5ac1eebdafbfea,Terminal 5,New York,NY,13,9,True,True,False,True
+venue_ec8b817923635ae7a8b74320ddd455b1,The Fonda Theatre,Los Angeles,CA,13,5,False,True,False,True
+venue_a365b2eef1575c2393292d8adc9ed524,Town Ballroom,Buffalo,NY,13,14,True,True,False,True
+venue_51abcb8ad8b45be79746f03c30e4a662,Variety Playhouse,Atlanta,GA,13,19,True,True,False,True
+venue_f0bcbc0e159d5fd4af747c55fe1a0008,Agora Theatre,Cleveland,OH,12,9,True,True,False,True
+venue_95104faaf23a52e2921f28a0aa11104c,Majestic Theatre-MI,Detroit,MI,12,5,True,True,False,True
+venue_408b75822faf51ae8d60090a7bdf7c39,Meyerhoff Symphony Hall,Baltimore,MD,12,6,True,True,False,True
+venue_fa85127c91bd5aabb257ce6eb3f19299,Rocket Arena,Cleveland,OH,12,6,True,True,False,True
+venue_7c9443d88e215294afa35efbc04cf0e4,Scoot Inn,Austin,TX,12,5,False,True,False,True
+venue_662e8d7900d359c8bcbb41b3fb2fb9ad,TSDMAAC,Detroit,MI,12,4,False,True,False,True
+venue_a085369defbe5068ac6c7e2a6063a9fe,The Wiltern,Los Angeles,CA,12,7,True,True,False,True
+venue_a9e9378427d25b0087523ea823d6160a,Vic Theatre,Chicago,IL,12,4,True,True,False,True
+venue_49b8f5256a2e561dac5196b6f2268fd5,American Airlines Center,Dallas,TX,11,4,False,True,False,True
+venue_d3575569498d539b808f67a8712c588b,Carpenter Theatre at Dominion Energy Center,Richmond,VA,11,6,True,True,False,True
+venue_51a0902de9295614bc9e0fce537bc5c8,Ember Music Hall,Richmond,VA,11,9,True,True,False,True
+venue_1d0ba85d1084599fa9eb9e6076dfc310,Fox Theatre Detroit,Detroit,MI,11,6,True,True,False,True
+venue_d594714934b3547eb36e59105dd1dc96,Mr Smalls Theater,Pittsburgh,PA,11,15,True,True,False,True
+venue_29b4a6fb8ca254a591b0ba2262b64f54,The Basement,Nashville,TN,11,2,True,True,False,True
+venue_1ac73b5286b258178beb520323fb4597,The Independent,San Francisco,CA,11,3,False,True,False,True
+venue_4e2d1ed4ca3a506b8e6d4336b93eaad8,Fenway Park,Boston,MA,10,1,True,True,False,True
+venue_62ab6f6ceed25f9885b2271f3bf5c3e7,Ford Field,Detroit,MI,10,3,False,True,False,True
+venue_084282b176615adea7f9ee624393a92f,Globe Iron,Cleveland,OH,10,4,True,True,False,True
+venue_584577f3d83e571b93a96ec2a03716cd,Grammy Museum LA Live,Los Angeles,CA,10,2,False,True,False,True
+venue_1da428f3e1da5e60992c9d6827faf646,KeyBank Center,Buffalo,NY,10,9,True,True,False,True
+venue_2efe9d63ab555095ba972185ad8a59d3,Little Caesars Arena,Detroit,MI,10,5,True,True,False,True
+venue_173d351bd90c5550973e79caafb6e39d,M&T Bank Stadium,Baltimore,MD,10,3,True,True,False,True
+venue_43934b4921345328b4081ab2177c3136,Mercedes-Benz Stadium,Atlanta,GA,10,7,True,True,False,True
+venue_a6ce46cb101c5f4181336733dc34ebe4,PPG Paints Arena,Pittsburgh,PA,10,11,True,True,False,True
+venue_8938574008ea58c8bd3915583788a165,Radius - Chicago,Chicago,IL,10,1,True,True,False,True
+venue_6a63fd36903f5559bbad474d8a5c30d9,Skyline Stage at Highmark Mann,Philadelphia,PA,10,8,True,True,False,True
+venue_86abfb18d78d50168cec31d37d1e1778,Sun Sets at View Boston,Boston,MA,10,1,False,True,False,True
+venue_2f1766e0258f5980a5312e2473328469,Tabernacle Presented by iTHINK Financial,Atlanta,GA,10,7,True,True,False,True
+venue_8e03252747f35a488d4419ea3609c351,Austin City Limits Live at The Moody Theater,Austin,TX,9,8,False,True,False,True
+venue_3018108f5bff5434a592bc4e31d17e2d,Berlin,New York,NY,9,2,True,True,False,True
+venue_c854c5dbf9895bc89a3a0522ccb44cd4,Chase Center,San Francisco,CA,9,5,False,True,False,True
+venue_ce34fa8f14e1542dbdf0c18247070f92,Empty Bottle,Chicago,IL,9,3,True,True,False,True
+venue_6909da83b1fe55228575ba4ce21e512a,Marquee New York,New York,NY,9,3,True,True,False,True
+venue_1cfcdf91ed225ecda8f87a7fd003c7ef,Moore Theatre,Seattle,WA,9,6,False,True,False,True
+venue_c81e28b40ca1547299e96387f908136a,Nissan Stadium,Nashville,TN,9,2,False,True,False,True
+venue_ea91c091421f581c8e4e655f45d78e86,Shrine Expo Hall,Los Angeles,CA,9,0,False,False,False,True
+venue_0807d2f7f7c958e2962cc5fd0d78c061,Stubb's Waller Creek Amphitheater,Austin,TX,9,8,False,True,False,True
+venue_b4178d6ef9725212b24633ab3305f109,The Concourse Project,Austin,TX,9,1,False,True,False,True
+venue_3149ddc1bde25542b213eec97f0a35ff,The Midway,San Francisco,CA,9,2,False,True,False,True
+venue_fdb5c7b6caa75a65bd3adf9474cd1d9b,The Shelter,Detroit,MI,9,3,True,True,False,True
+venue_4c0bd0c539735c748bb14c162cf4d53f,Wolstein Center at CSU,Cleveland,OH,9,3,True,True,False,True
+venue_a3cd00beb960592691c9036d31c971e8,Bowery Palace,New York,NY,8,4,True,True,False,True
+venue_a69e29edd4c250ed8a594f19dbda4701,"Circle Line Cruises, Pier 83",New York,NY,8,3,True,True,False,True
+venue_cc7f542e690b5daf9687796d245a39c0,DAR Constitution Hall,Washington,DC,8,4,True,True,False,True
+venue_e9aff5d72a645597a6b38a6583944b82,Festival Hall At Navy Pier,Chicago,IL,8,1,False,True,False,True
+venue_483a50c67b315dd1b9af9628914eab04,Greek Theatre-Los Angeles,Los Angeles,CA,8,3,False,True,False,True
+venue_1687382d2c1e5185b71d753a91c3b1e0,Morton Meyerson Symphony Center,Dallas,TX,8,1,False,True,False,True
+venue_d154e4aa6e5656d598ee626194e76746,Orpheum Theatre,Los Angeles,CA,8,5,False,True,False,True
+venue_69d639492ca9576c867b5997e3ed230d,Symphony Center-IL,Chicago,IL,8,1,True,True,False,True
+venue_a981720a39e55dc8a53c817eb7949a73,TSDMAAC (Catacombs),Detroit,MI,8,2,False,True,False,True
+venue_2ee9d8d2cc7c56da9288d313bc9a961d,The Cambridge Room at House of Blues Cleveland,Cleveland,OH,8,4,True,True,False,True
+venue_256f6d93e9b257e980d14fb88436a674,The Novo by Microsoft,Los Angeles,CA,8,4,True,True,False,True
+venue_ec6805a8e42d5ffb8146634169ec97dd,Trees,Dallas,TX,8,2,False,True,False,True
+venue_e64bf500e77e5a76a435e3a1f4598377,Union Park,Chicago,IL,8,0,False,False,False,True
+venue_a52ccdac077559f88e0bb2de1956ee8d,Brick and Mortar Music Hall,San Francisco,CA,7,5,False,True,False,True
+venue_02b28519ab9054d98f87fbdd5e2dd8ed,Cobb Energy Performing Arts Centre,Atlanta,GA,7,4,True,True,False,True
+venue_d4d13ee926e856cf8c394a5787985f4a,Credit Union 1 Arena at UIC,Chicago,IL,7,2,True,True,False,True
+venue_00332458adf45c358307092334d0b96b,Navy Pier,Chicago,IL,7,2,True,True,False,True
+venue_5d4e3214577b5484812dcef420a65a49,Ramova Theatre,Chicago,IL,7,2,True,True,False,True
+venue_c825b69545b95d4fbddccbb782e088ec,Ray Charles Terrace at GRAMMY Museum L.A. Live,Los Angeles,CA,7,5,False,True,False,True
+venue_440b9a17c4da53c5ab4f973acb5bbc73,The Broadberry,Richmond,VA,7,12,True,True,False,True
+venue_9f50007a984d55f0a38208deeaece329,The East Room,Nashville,TN,7,2,True,True,False,True
+venue_936c844b74825eb59d7904cd53301bdc,The Foundry,Cleveland,OH,7,2,True,True,False,True
+venue_c932315b05a8574197c573cb19aa9293,Three Links Deep Ellum,Dallas,TX,7,6,False,True,False,True
+venue_af6d58165f9250b0bb2cb3141c7cf6cc,WAMU Theater,Seattle,WA,7,3,False,True,False,True
+venue_561d4d15c6b55086b65cd4e6b9aaac3e,1015 Folsom,San Francisco,CA,6,0,False,False,False,True
+venue_84f3b236694457f2a2eb24bd30856492,3TEN ACL Live,Austin,TX,6,2,False,True,False,True
+venue_0b51275a0ec05084964eab3429cc2cd0,Academy LA,Los Angeles,CA,6,1,False,True,False,True
+venue_300d1481724c53829a06714f1fdc28c0,Avondale Music Hall,Chicago,IL,6,3,True,True,False,True
+venue_60ddb5f56dd155cf921948b55f832bf5,Bill Graham Civic Auditorium,San Francisco,CA,6,3,False,True,False,True
+venue_f5ef1225aef95810bbfff1c5a0b6c74c,CLUB 909 at the Music Hall at Fair Park,Dallas,TX,6,1,False,True,False,True
+venue_545e728c1fbb5d408de86fec2263b43b,Eastside Bowl,Nashville,TN,6,2,True,True,False,True
+venue_998bfb509fdb5245a4de187a68a33270,El Rey Theatre - Los Angeles,Los Angeles,CA,6,3,True,True,False,True
+venue_0ba17d7135025991aeb3f494b0693b6b,Exchange LA,Los Angeles,CA,6,2,False,True,False,True
+venue_35d16488c50155aabedd4dc29d35982c,Neck of the Woods,San Francisco,CA,6,2,False,True,False,True
+venue_505f7aea8e905c33814dcedd79dcb1be,Neumos,Seattle,WA,6,1,False,True,False,True
+venue_67302fffab105bb5a36708aa58d69a9f,Rickshaw Stop,San Francisco,CA,6,4,False,True,False,True
+venue_5764dbce638b5dccb7bc150e2ad39176,Sound Board at MotorCity Casino Hotel,Detroit,MI,6,4,True,True,False,True
+venue_8968e714e1e756fea975e72b2fd2df1c,Stateside Live Philadelphia,Philadelphia,PA,6,2,False,True,False,True
+venue_fd704c61df0a53f48ae494576e7c4578,T-Mobile Park,Seattle,WA,6,1,False,True,False,True
+venue_d2b69d76cc1d5b1394003d12c28e1e43,The Far Out Lounge,Austin,TX,6,0,False,False,False,True
+venue_a0a0637f109f5871b9c3a066a1864345,The Masonic,San Francisco,CA,6,5,False,True,False,True
+venue_71aaaeb9cbb05024a88ddca0e1135946,The Studio at the Bomb Factory,Dallas,TX,6,6,False,True,False,True
+venue_85212db23af250a0bf5b846e52b81860,Virginia Credit Union LIVE!,Richmond,VA,6,2,True,True,False,True
+venue_f81d90619e845fcfa063641898622571,World Cafe Live-Philadelphia,Philadelphia,PA,6,4,True,True,False,True
+venue_d1575c78ef395578b1cf27114a2d182e,BMO Stadium,Los Angeles,CA,5,3,False,True,False,True
+venue_b208af843bbd543b8c8542b6afe85b45,Baba Yaga,Seattle,WA,5,3,False,True,False,True
+venue_8e510eb2817557c3ac48f09a9198e76e,Bimbo's 365 Club,San Francisco,CA,5,4,False,True,False,True
+venue_711807e302b55b52be2e9c0b86bd9415,Boch Center Wang Theatre,Boston,MA,5,5,True,True,False,True
+venue_0d41dbb2054a5774bcb06b45d1cd1d2b,Cannery Hall,Nashville,TN,5,1,True,True,False,True
+venue_330af314983157d6b1e7eab27f6b69c6,Club Cafe,Pittsburgh,PA,5,8,True,True,False,True
+venue_93f74d1110ee58e5a44195b093a4799b,Crypto.com Arena,Los Angeles,CA,5,4,False,True,False,True
+venue_1c7f730f70c45542a6bd581030a583ea,Empire Garage,Austin,TX,5,2,False,True,False,True
+venue_db9bd14bba38554fb30ffb17b2bf2f3d,Fox Theatre - Atlanta,Atlanta,GA,5,10,True,True,False,True
+venue_f161a6ba88ec5686b408f9d3a31bb784,Garfield Park Conservatory,Chicago,IL,5,2,False,True,False,True
+venue_122b0dc695b7530cb4bb655d21e236d0,Gas Works Park,Seattle,WA,5,0,False,False,False,True
+venue_4cc0373aecb3585889dab4b80982104a,Granada Theater - TX,Dallas,TX,5,1,False,True,False,True
+venue_41917d4129cc5ed6887c8c935a784bc7,Joe's on Weed Street,Chicago,IL,5,2,True,True,False,True
+venue_8f2c4113c165543a85fe6fda46b11476,Majestic Theatre Dallas,Dallas,TX,5,3,False,True,False,True
+venue_4593cff9ebb75447b96cb658f0bd599d,Nashville Municipal Auditorium,Nashville,TN,5,1,True,True,False,True
+venue_4d97e99312535a18ae18c95b5a543040,Paramount Theatre,Seattle,WA,5,4,False,True,False,True
+venue_2bfe9d97d03e5c2b86f7f68c08781e42,Reggies Music Joint,Chicago,IL,5,3,True,True,False,True
+venue_db1d6920de665b89bc112bd508a8e1eb,Stateside Live!,Philadelphia,PA,5,2,False,True,False,True
+venue_34fc0b819bce5bd1b387ee5a94d550be,Subterranean,Chicago,IL,5,4,True,True,False,True
+venue_d655b5b63c645a6cbe126ab49bbf1ca6,The Wilbur,Boston,MA,5,5,True,True,False,True
+venue_d887d0c427b85f4a8a418386b38dbcab,Acrisure Stadium,Pittsburgh,PA,4,1,True,True,False,True
+venue_73dfdacd514b52d5adc9457405820863,Beat Kitchen,Chicago,IL,4,2,True,True,False,True
+venue_03c8de944c6151bd893afc07399a1cbd,Brushy Street Commons,Austin,TX,4,2,False,True,False,True
+venue_b89f286620ec55279ad43fe605088469,Cafe Wha?,New York,NY,4,3,True,True,False,True
+venue_25745036fa5f5c969ce1bd694edc3bd0,Clock-Out Lounge,Seattle,WA,4,2,False,True,False,True
+venue_307095d492985a2b80cc689b3d50bb9a,Club Dada,Dallas,TX,4,2,False,True,False,True
+venue_d86e7387f2b351b89c1f1b8342b8fd93,Crafthouse Stage and Grill,Pittsburgh,PA,4,7,True,True,False,True
+venue_c0eb4a732668515cbc7fea2166c8f83a,David Geffen Hall,New York,NY,4,1,True,True,False,True
+venue_9abf6588eced5b218e9fbcbeffc65452,Davies Symphony Hall,San Francisco,CA,4,0,False,False,False,True
+venue_3380986bfe785de5b6c036ba6a0af07d,Fisher Theatre - Detroit,Detroit,MI,4,3,True,True,False,True
+venue_bea3edee872d518d9279135c05352dd6,Funny Bone Comedy Club - Richmond,Richmond,VA,4,0,False,False,False,True
+venue_d37e9a9468a8594dbce11dac95055352,Heinz Hall,Pittsburgh,PA,4,4,True,True,False,True
+venue_42cd57238fa254c4b81bbcaf96a96130,Longhorn Ballroom & Backyard Amphitheater,Dallas,TX,4,4,False,True,False,True
+venue_188f91b67bf456b988ee5f90440e82bc,Magic Stick,Detroit,MI,4,1,True,True,False,True
+venue_dad32888fa4955c89a235d93c8728211,Masonic Temple - Detroit,Detroit,MI,4,2,True,True,False,True
+venue_5768f3adc0165a8991434afc02f5ab4d,Metro,Chicago,IL,4,3,True,True,False,True
+venue_72dc4f4c720b57d8a9e764c0ba22ee3a,Park West,Chicago,IL,4,2,True,True,False,True
+venue_6323194252285b448a38a7fb67210341,Power Plant Live,Baltimore,MD,4,2,True,True,False,True
+venue_6e37e0dec4a75540994c29723bc1c6b7,Reggie's Rock Club,Chicago,IL,4,1,True,True,False,True
+venue_3a34eba3c60b5cb18a0ba026b3ca2d25,Riviera Theatre,Chicago,IL,4,2,True,True,False,True
+venue_b576a48aeb0e51e7a9351f0d27c599a0,Riviera Theatre- IL,Chicago,IL,4,3,True,True,False,True
+venue_544746946da55d789d22b88556dbb0f1,Russell Industrial Center,Detroit,MI,4,2,True,True,False,True
+venue_9a417f38716455f2a7b9373ef08a0393,Spirit Hall,Pittsburgh,PA,4,7,True,True,False,True
+venue_f996284fca045d7382fe3f7de73af331,Stubb's Indoors,Austin,TX,4,4,False,True,False,True
+venue_1590b388ce7b5b628f46c3fd733774f0,The Auditorium,Chicago,IL,4,2,True,True,False,True
+venue_3c179c369d185a998c8b7058c9717e00,The Goizueta Stage for Youth and Families,Atlanta,GA,4,1,False,True,False,True
+venue_f83b35949c435d07a3d53e7ed6ff229c,The Masonic Lodge at Hollywood Forever,Los Angeles,CA,4,1,False,True,False,True
+venue_6697377ddf0456eebddbc2b90c9490e3,United Palace,New York,NY,4,2,True,True,False,True
+venue_3e24ff3b635a5224907c51bae78831da,Bicentennial Capitol Mall State Park,Nashville,TN,3,0,False,False,False,True
+venue_1c7d2493c9c45e78b34e3317c8952466,Blue Note Jazz Club - NY,New York,NY,3,0,True,False,False,True
+venue_1db3c9f32f9d52898b72aebc6284a0bb,Capital One Arena,Washington,DC,3,4,True,True,False,True
+venue_0cce55b1d52b5345acab8ac1783da005,Carnegie Hall,New York,NY,3,6,True,True,False,True
+venue_ac8653d0ff2852e8ad1f82c8ad08916d,Castaways,Chicago,IL,3,0,False,False,False,True
+venue_6a5979b3d6755535960d8e14550bde9d,City Winery - Atlanta,Atlanta,GA,3,1,True,True,False,True
+venue_41d2dcb1ea8156718405035c605ab1b0,City Winery - Boston,Boston,MA,3,2,True,True,False,True
+venue_42be8d9bfe9b5a7d878884666db7de46,Concord Music Hall,Chicago,IL,3,0,True,False,False,True
+venue_2bd46aa8928a58fea5ecb4f9e9f468cc,Douglass Park,Chicago,IL,3,1,False,True,False,True
+venue_39f7b3ede75a5415b345b5607a04bc72,Frog Alley Brewing,New York,NY,3,4,True,True,True,True
+venue_645d3066f4d05c92a87270e140b4e124,Great American Music Hall,San Francisco,CA,3,3,False,True,False,True
+venue_a3fb5498e96151e093b18b8babd2e39d,Huntington Bank Field,Cleveland,OH,3,1,False,True,False,True
+venue_5b37a0d6df16567893c8fc92fd03f7ec,Lumen Field,Seattle,WA,3,1,False,True,False,True
+venue_942eaa1b26415eddb29942faadbdb857,Monarch,San Francisco,CA,3,1,False,True,False,True
+venue_d178dc678ac6598a8afe22d4cc805e18,Music Hall Center,Detroit,MI,3,3,True,True,False,True
+venue_c58e251683fb5098a4c1d4e91f7873c4,Oracle Park,San Francisco,CA,3,1,False,True,False,True
+venue_3c7c428c76ff5ad0ab5c519b11f906ca,Peacock Theater - LA,Los Angeles,CA,3,1,False,True,False,True
+venue_708032be6dd551ffb13d87ca4556e074,TSDMAAC (Crypt),Detroit,MI,3,4,False,True,False,True
+venue_4f4acdcd7f895c9e8c962bb5503d7d0b,The Eastern,Atlanta,GA,3,2,True,True,False,True
+venue_26cd5e98990c5083b41c3b461dc851ef,The Greene Space,New York,NY,3,3,False,True,False,True
+venue_ed7c0a2742a65d508f56b6c3e13ab147,The Liacouras Center,Philadelphia,PA,3,6,True,True,False,True
+venue_ef8fd7d676ed59468830773b8a64967b,The Pico Union Project,Los Angeles,CA,3,1,False,True,False,True
+venue_969fbd18f4b85ccda7f7f7635c1639ca,The United Theater on Broadway,Los Angeles,CA,3,0,False,False,False,True
+venue_1f5b2132d8bd52398912377c0f45d51b,Treelawn Music Hall,Cleveland,OH,3,2,False,True,False,True
+venue_785c00385d3c5aaab268c8b5c11fc778,Treelawn Social Club,Cleveland,OH,3,3,True,True,False,True
+venue_67cba5114a0a52988090401bae4ec95d,Truist Park,Atlanta,GA,3,2,True,True,False,True
+venue_b81e4d70daa256daba729a9a15eda104,Barboza,Seattle,WA,2,0,False,False,False,True
+venue_85446b9130d551428b54413ef64c4e62,Beachland Ballroom,Cleveland,OH,2,1,False,True,False,True
+venue_9aa1328d39dd57d099b61fef00fc71d7,Carol's Pub,Chicago,IL,2,2,True,True,False,True
+venue_ce6c9a66e9f85a40bbea13514440c126,Category 10,Nashville,TN,2,1,False,True,False,True
+venue_54d05e6c656f57508c2edb177dbdb128,Chop Shop,Chicago,IL,2,2,True,True,False,True
+venue_66a399f70a245a5e90c4597160608060,Chop Suey,Seattle,WA,2,1,False,True,False,True
+venue_7fb7208bc0b75cbeb4cdb0f93f707fc8,City Winery - Philadelphia,Philadelphia,PA,2,2,True,True,False,True
+venue_841cbae45f8f5b12bc3cc4b450ab4447,Come and Take It Live,Austin,TX,2,3,False,True,False,True
+venue_759830f316a7598ba48c9f08f0a66f18,Comerica Park,Detroit,MI,2,1,False,True,False,True
+venue_51b6f2f0f3a45b7f83c1ce95c15a9ce8,Cubby Bear,Chicago,IL,2,1,True,True,False,True
+venue_3ec130dbd85d5f0c89952c48ec095903,Detroit Opera House,Detroit,MI,2,2,True,True,False,True
+venue_6ec1f08a22fe5526828e2ea3f973cf50,El Corazon,Seattle,WA,2,2,False,True,False,True
+venue_f06902e3140050d3bef870c188093a29,Helium Comedy Club - Buffalo,Buffalo,NY,2,0,False,False,False,True
+venue_7c45ea04f80a5904b4f1df4ef986c10e,Javits Convention Center,New York,NY,2,0,False,False,False,True
+venue_cc3389831cb758a69e472bdf33a907d5,Karma DC Live Music Venue,Washington,DC,2,1,True,True,False,True
+venue_ecb74e924b09557bb670f8b762f34f67,Los Angeles State Historic Park: On The Promenade,Los Angeles,CA,2,1,False,True,False,True
+venue_3bc9022d238c553da46db9a6e2d45de1,Marian Anderson Hall - Kimmel Center,Philadelphia,PA,2,1,True,True,False,True
+venue_24a15756d0c1539ab1d9918fb59082d3,Miller Theater-PA,Philadelphia,PA,2,1,True,True,False,True
+venue_fb93ba9929ae50dcb0768970b87e6ed2,Orpheum Theatre presented by Citizens,Boston,MA,2,1,True,True,False,True
+venue_c0d3170d4f46593796b8e939bf4a6d0c,Patio at Radio Hotel,New York,NY,2,1,False,True,False,True
+venue_924b3e0d7abb5aa888f276ffeab659de,Reggies Bananna's Shack ,Chicago,IL,2,1,False,True,False,True
+venue_f810ab76dbe05bc1a878e02ae13c72f1,Scorpion Bar Boston,Boston,MA,2,1,False,True,False,True
+venue_5640313cedd4545cb72efb5bb83b9656,Shea's Buffalo Theatre,Buffalo,NY,2,2,True,True,False,True
+venue_2ec6c668934f520597935f7bd378ead3,Substation,Seattle,WA,2,2,False,True,False,True
+venue_fcfd3674d27257ef9a3e3b0974ba8862,Swedish American Hall,San Francisco,CA,2,2,False,True,False,True
+venue_540bfabad44551d7b4527e78879c038c,TLO Event Complex,Philadelphia,PA,2,1,False,True,False,True
+venue_029c7421975c52159cdd5d6013ba8b47,Victory Hall at The Boxyard,Seattle,WA,2,0,False,False,False,True
+venue_6b80ba1609135c979097e179bfe83684,Walter E. Washington Convention Center,Washington,DC,2,1,False,True,False,True
+venue_3dbcad6cfed75c96af11320ac58faf74,29th Street Ballroom,Austin,TX,1,1,False,True,False,True
+venue_4ccc292e5c955586ad3454948f846f78,Altria Theater,Richmond,VA,1,7,True,True,False,True
+venue_d51e623d6f9d57c59c7f5efec46f9006,Asbury Hall at Babeville,Buffalo,NY,1,5,True,True,False,True
+venue_cfd0fa01c6d55133a3e8599007b4f9d6,Assembly Food Hall,Nashville,TN,1,0,False,False,False,True
+venue_0c4824009c7153f3b0e014300450841e,Atlanta Eagles Arena,Atlanta,GA,1,0,False,False,False,True
+venue_106ed16a3c6554b0953114bcb6032184,Audible's Minetta Lane Theatre,New York,NY,1,0,True,False,False,True
+venue_64d83651d7e851dc88ffa9e4edef1d0a,Auditorium Theatre - IL,Chicago,IL,1,1,False,True,False,True
+venue_ac4ffacef5435e1aabf6f8c70248b207,B-Side at Blue Note Los Angeles,Los Angeles,CA,1,2,False,True,False,True
+venue_0e67f39063605667936bfba800c7f3d0,Believe Music Hall,Atlanta,GA,1,1,True,True,False,True
+venue_ac189b3d6bdb509fba0f1caae1b2e33c,Bleecker Bell,New York,NY,1,1,False,True,False,True
+venue_d6cd4aa7e7ee58818fef32ceccc11ac2,Brick & Mortar Music Hall,San Francisco,CA,1,1,False,True,False,True
+venue_33776f87c0a25bc4869f9ba8afd53ba0,Buffalo Outer Harbor,Buffalo,NY,1,1,True,True,False,True
+venue_1984e1eafd3e5d80a60aef741828eeb9,Chop Shop - IL,Chicago,IL,1,0,True,False,False,True
+venue_4ee5cec1f3855a28bcc22c0ce98e987f,Copernicus Center,Chicago,IL,1,1,False,True,False,True
+venue_15904ad16033512fadc8b04176f1676e,Curran Theatre,San Francisco,CA,1,1,False,True,False,True
+venue_b9372ddae7c9548299f4273f97a0e903,Dave & Buster's,Los Angeles,CA,1,1,False,True,False,True
+venue_a738185bdbe85360a3548ce26b2f5983,Drom,New York,NY,1,2,True,True,False,True
+venue_d79888b8c26b5e80847797e237a79a99,El Cid,Los Angeles,CA,1,1,False,True,False,True
+venue_96e7074a154c5074b86c5ce26ae5b112,Feinstein's at The Nikko,San Francisco,CA,1,2,False,True,False,True
+venue_2ec2be7eb3375580b45922dbfd4657e8,Fox Theatre Atlanta,Atlanta,GA,1,3,True,True,False,True
+venue_e59c1373ff8a50b480f66dc0b9099c73,Gary & Laura Maurer Concert Hall,Chicago,IL,1,1,True,True,False,True
+venue_740b90d0e7725f1684005ebae3ae9fcf,Groove,New York,NY,1,1,False,True,False,True
+venue_4e74891095ab5745a262e36e8214e877,Hard Rock Cafe,New York,NY,1,2,False,True,False,True
+venue_c2772e06e8545177b6bffc18df95b361,Harpos,Detroit,MI,1,0,True,False,False,True
+venue_e61a084320d959189168f12bfbf13c87,Hill Country Live,New York,NY,1,1,True,True,False,True
+venue_e63f19f143855194936beb634de20ee4,Hole In The Wall,Austin,TX,1,1,False,True,False,True
+venue_7b019045471658388cf265de32541b35,Joanne Trattoria,New York,NY,1,1,False,True,False,True
+venue_b259043aa54f59ae8e4ad0a410693e87,Joe's on Weed Street Chicago,Chicago,IL,1,0,True,False,False,True
+venue_242a6c1b49d95515b7be83b553cd7b03,Kimmel Cultural Campus,Philadelphia,PA,1,0,False,False,False,True
+venue_b341106e710f55f5ad71dbebf79ee4be,Kingdom Austin Night Club,Austin,TX,1,0,False,False,False,True
+venue_5e8c1db0491e58e2a2584f516f3c0554,LifeFamily Mueller,Austin,TX,1,1,False,True,False,True
+venue_9b9241c7567d5ab0a88e93d89389039f,Lincoln Factory,Detroit,MI,1,1,False,True,False,True
+venue_49538203a3405d88803224055ea19fd2,Lincoln Hall,Chicago,IL,1,1,True,True,False,True
+venue_920aef299a075a0487e4b3e1d0b47705,Manhattan Center Hammerstein Ballroom,New York,NY,1,1,False,True,False,True
+venue_2b85628b19c954e5936835cd73a1fbe7,Margot and Bill Winspear Opera House,Dallas,TX,1,1,False,True,False,True
+venue_c634b7f367d3558680a28d681007d1ee,Mayan Theater,Los Angeles,CA,1,1,False,True,False,True
+venue_17e711c7bde15ec697f07964b70233ff,McCaw Hall,Seattle,WA,1,1,False,True,False,True
+venue_44f0905937ee517089bbdca4bdb4517a,Miner Auditorium,San Francisco,CA,1,1,False,True,False,True
+venue_eecd32716acc5f39aad09a34ee132245,Palace of Fine Arts,San Francisco,CA,1,2,False,True,False,True
+venue_569bad6769b15eb2b8e67866e4b29de8,Pittsburgh Improv,Pittsburgh,PA,1,0,False,False,False,True
+venue_fbcf06e3db125e16971a855646e9c4b9,Presence Arena,Atlanta,GA,1,1,False,True,False,True
+venue_a77d2b33dc4a51ca80ab92e32b51f36b,ROCKS OFF Concert Cruise Series,New York,NY,1,1,True,True,False,True
+venue_21a62022fcb659279aefa7a0dd204f72,Radio East,Austin,TX,1,0,False,False,False,True
+venue_9bbcb3e6a7ea589a933e68ce40b3ecfd,Red Devil Lounge,San Francisco,CA,1,1,False,True,False,True
+venue_74785d442ee054c09d6ea95c6187bea3,Reggie's Music Joint,Chicago,IL,1,1,False,True,False,True
+venue_cd549b0568af57bda7aebd2c02a5db5a,Reggies Chicago,Chicago,IL,1,0,False,False,False,True
+venue_537298e8d1ea518cbf6c49e9d9774c3e,Riviere Austin,Austin,TX,1,1,False,True,False,True
+venue_6f7be841b31e53f0aec22d1595f39e30,Rock & Roll Hall Of Fame,Cleveland,OH,1,1,False,True,False,True
+venue_692c2444f95a5254aa033fe595b0d255,S.O.B.'s,New York,NY,1,1,True,True,False,True
+venue_7af999715f7050d3a72c050ab6900463,Schermerhorn Symphony Center,Nashville,TN,1,0,True,False,False,True
+venue_b7c7553a5d0c5ff18720cdfcc4190109,Silk City,Philadelphia,PA,1,0,True,False,True,True
+venue_f86f7ac7d38a5a7d8d03d06fc2cd5a46,Soho Live,New York,NY,1,1,False,True,False,True
+venue_a64fc925809358babcbcafb1cf5b346b,Sunset Tavern,Seattle,WA,1,1,False,True,False,True
+venue_c860e28a951a593685233e3915f508b1,TSDMAAC (Confessional),Detroit,MI,1,1,False,True,False,True
+venue_e660ec1738e65df2b4071aa1d29d5847,Tangent Gallery,Detroit,MI,1,1,True,True,False,True
+venue_1c9a59577a93521db47c186f0c6b3ec6,The Fisher Center,Nashville,TN,1,1,True,True,False,True
+venue_68d7c8d533a255ec9ce66945fc33f0a8,The Loft at Academy LA,Los Angeles,CA,1,1,False,True,False,True
+venue_188a42eb012f5a7c89de6cb9de260c04,The Loreto Theater at The Sheen Center for Thought & Culture,New York,NY,1,1,False,True,False,True
+venue_39b657fa71615bd3a079d66d26ba7a4b,The Masquerade Music Park,Atlanta,GA,1,1,False,True,False,True
+venue_ce700977018e5a1584061b2416ddc8a8,The Mil at Cannery Hall,Nashville,TN,1,1,True,True,False,True
+venue_b7952ac9994c5ae9847e463332070d7b,The Mohawk-Austin,Austin,TX,1,1,False,True,False,True
+venue_c720bc13cde258a886f02a27f626e353,The Theater at Bill Graham Civic Auditorium,San Francisco,CA,1,1,False,True,False,True
+venue_0a3ea820c05d58daaf729e1b7bc43774,The Virgil,Los Angeles,CA,1,1,False,True,False,True
+venue_0172552774b65f86bfb9b428eaa201af,Three Top Lounge,Chicago,IL,1,1,False,True,False,True
+venue_28e183cda54b5db987ff5bb82b51fa92,Thunderbird Cafe & Music Hall,Pittsburgh,PA,1,2,True,True,False,True
+venue_a3247e7082225cf6a6ec15b9ea49cd8e,Ticketmaster Test Stadium,Atlanta,GA,1,1,False,True,False,True
+venue_0eee7d4b709259099a3c3a594524f387,Tractor Tavern,Seattle,WA,1,1,False,True,False,True
+venue_66d556baec40593dbb683dffe87eedb1,Wilshire Ebell Theatre,Los Angeles,CA,1,1,False,True,False,True
+venue_874d96ead405523598c2dc9ade2c6835,Wintrust Arena,Chicago,IL,1,1,False,True,False,True
+venue_59999b3ac03e59879189722d8d885860,04 Center,Austin,TX,0,1,False,True,False,True
+venue_62527fb565105887900dfd890504b6ed,Academy Nightclub,Los Angeles,CA,0,0,False,False,False,True
+venue_032c568d894851a6b93349d3ac76d133,Aretha's Jazz Cafe,Detroit,MI,0,1,True,True,False,True
+venue_828c3ca05b20583095278bcf9a4bfcb8,Bass Concert Hall,Austin,TX,0,3,False,True,False,True
+venue_89cddb85e8f9530fa1d85747c3b673f4,Black Cat,Washington,DC,0,0,True,False,False,True
+venue_df1a23157d2c574ba2caa2030a5c58e8,Blues Alley Club,Washington,DC,0,0,True,False,False,True
+venue_a2a920d41c6e52d2bf87b7815cbb3dc2,Bohemian Nat'l Cemetery (Outside),Chicago,IL,0,1,False,True,False,True
+venue_4bf31f0d15e453a89250d12e9a9de022,Buffalo State Performing Arts Center,Buffalo,NY,0,3,True,True,False,True
+venue_3a33835289e3530c82c4996620bc96e4,Byham Theater,Pittsburgh,PA,0,0,True,False,False,True
+venue_6e8fe53ce25e5515a61e9cdefe854500,Central Machine Works,Austin,TX,0,1,False,True,False,True
+venue_05ec15b4d1155e0f879c400670fa4320,Chesapeake Employers Insurance Arena,Baltimore,MD,0,4,True,True,False,True
+venue_6eb8a8cf795b5e5a8bd3bc6930e6ae37,Citizens Live at The Wylie,Pittsburgh,PA,0,18,True,True,False,True
+venue_43a2cf20caa9504a9ccc9ecd93334697,El Club,Detroit,MI,0,0,True,False,False,True
+venue_215658cfc8c05f609f66fb1cfb5de504,Exit In,Nashville,TN,0,0,True,False,False,True
+venue_269154b3f584515baa97d6291d3833e0,F.N.B. Stadium,Pittsburgh,PA,0,5,False,True,False,True
+venue_2c19746eb6275172930084055acafa31,FNB Stadium,Pittsburgh,PA,0,0,False,False,False,True
+venue_1a7c6267feb050f287376c0d2ae93017,Flagg Building Atrium,Washington,DC,0,1,False,True,True,True
+venue_0bd471852bc65371b0ea05720584c74f,Gloria Molina Grand Park,Los Angeles,CA,0,0,False,False,False,True
+venue_0a7e4ff2238a50bc9a08f70db765c6fc,Golden Gate Theater,San Francisco,CA,0,1,False,True,False,True
+venue_4e0c319953845898bce1f90ef1bf01d9,Hammer Auditorium,Washington,DC,0,1,False,True,False,True
+venue_d128d96d500e53a593b5b1df660559eb,Hollywood Forever,Hollywood,CA,0,1,False,True,False,True
+venue_8796c26b8f4b5f7eb781b88ea20b1a7a,Jack White Theatre at the Masonic Temple - Detroit,Detroit,MI,0,2,True,True,False,True
+venue_661bdafeaa2f5a5dae2a608f574109a7,Kanawha Plaza,Richmond,VA,0,2,False,True,False,True
+venue_f2a0b51e9df7580882881b6d1df86d8a,Liberation Church,Richmond,VA,0,2,True,True,False,True
+venue_7b3ddc4d066c59c7afdc486bd74614d9,Longhorn Backyard Amphitheater,Dallas,TX,0,1,False,True,False,True
+venue_f8b137d3735657d381cd724315282c14,M&T Bank Exchange,Baltimore,MD,0,1,False,True,False,True
+venue_6ad020ac054459c7b30c8aafd7fb3ac5,Miracle Theatre,Washington,DC,0,1,True,True,False,True
+venue_a598c315b7d654419a0b2ebbb8f3fda8,New Jersey Performing Arts Center,Newark,NJ,0,18,True,True,False,True
+venue_505d6b626d9c5dbb8a222d2b19a09b68,Nightclub 101,New York,NY,0,0,False,False,False,True
+venue_1a0f23441a1052db9d30a2eff9717a79,Pennsylvania Avenue,Washington,DC,0,1,False,True,False,True
+venue_4a952570eb5651f9b3d6b53165dd7a8f,Prudential Hall at New Jersey PAC,Newark,NJ,0,1,True,True,False,True
+venue_8809a941cc0a5e2ea8a2c56e3eec4ad4,Shrine Auditorium-CA,Los Angeles,CA,0,1,False,True,False,True
+venue_8a9ffa3c085d50f4bcc2312272fc6af8,TLO Temple ,Philadelphia,PA,0,1,False,True,False,True
+venue_fad9ca92868459e7851cd5506da53efd,Taper Auditorium,Seattle,WA,0,1,False,True,False,True
+venue_ed505b56c9ac54fea84325e8d2470ab7,The Ford - CA,Los Angeles,CA,0,0,False,False,False,True
+venue_6c41cb8d60605f6a91d3bd9f48bbf0d1,The Hamilton,Washington,DC,0,2,True,True,False,True
+venue_db137fe09b3f5cea89278ec4e14a1483,The Lyric,Baltimore,MD,0,1,True,True,False,True
+venue_1604dec3b74652409d96897453613ece,The Lyric - Baltimore,Baltimore,MD,0,5,True,True,False,True
+venue_39620b959479524dadd4a17f14eed4a0,Unhinged Lounge,Cleveland,OH,0,1,False,True,False,True
+venue_56c33676a57d5b4e84754d85957d37b6,Wish Lounge at Believe Music Hall,Atlanta,GA,0,1,False,True,False,True
+venue_b4cf282bef4b5c63984e7ef4cd81de8a,Zilker Park,Austin,TX,0,1,False,True,False,True

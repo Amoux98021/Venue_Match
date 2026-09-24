@@ -1,0 +1,17 @@
+metric,value
+total_historical_bookings,8715
+eligible_historical_bookings,8671
+eligible_with_5_plus_candidates,8531
+eligible_unique_artists,3713
+eligible_unique_venues,427
+eligible_markets,18
+useful_markets,0
+basic_eligibility_definition,Resolved historical relationship with a known market and at least one alternative venue in the same market that had been observed by the event date.
+strict_eligibility_definition,"Basic entity/date requirements with at least five total candidate venues, including the booked venue."
+candidate_minimum,2
+candidate_p25,14.0
+candidate_median,22.0
+candidate_mean,23.51
+candidate_p75,32.0
+candidate_p90,41.0
+candidate_maximum,52

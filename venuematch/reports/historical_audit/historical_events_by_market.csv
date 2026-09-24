@@ -1,0 +1,22 @@
+market,is_target_market,historical_event_count,future_event_count,missing_date_count,unique_artists,unique_venues,earliest_event_date,latest_event_date,median_historical_events_per_venue,artists_with_2_plus_historical_appearances,venues_with_10_plus_historical_events,historical_months,historical_span_days,benchmark_eligible_count,mean_candidate_count,useful_for_temporal_benchmark
+"New York, NY",True,1972,849,0,939,50,2026-07-14,2027-01-30,11.0,411,25,3,70,1972,36.19,False
+"Philadelphia, PA",True,909,647,0,582,27,2026-07-14,2027-01-20,23.0,283,17,3,70,908,20.72,False
+"Atlanta, GA",True,903,912,0,590,33,2026-08-04,2027-02-01,18.0,280,21,2,49,903,27.62,False
+"Washington, DC",True,668,464,0,401,14,2026-07-16,2027-01-21,25.5,224,10,3,68,666,11.36,False
+"Boston, MA",True,621,645,0,365,18,2026-08-04,2027-02-06,27.5,216,13,2,49,621,14.38,False
+"Los Angeles, CA",True,568,125,0,480,37,2026-08-19,2026-09-27,8.0,59,15,2,34,568,30.69,False
+"Chicago, IL",True,535,87,0,449,52,2026-08-04,2026-09-27,5.0,69,16,2,49,534,36.89,False
+"Nashville, TN",True,432,72,0,325,23,2026-08-04,2026-09-29,11.0,67,12,2,49,432,16.0,False
+"Dallas, TX",True,298,117,0,266,20,2026-08-19,2026-10-04,9.5,23,10,2,34,297,17.49,False
+"Richmond, VA",True,292,290,0,168,11,2026-08-04,2027-03-03,11.0,87,7,2,47,290,7.72,False
+"Baltimore, MD",True,251,292,0,178,8,2026-07-16,2026-12-26,36.0,67,7,3,68,249,7.52,False
+"Detroit, MI",True,227,114,0,220,23,2026-08-05,2026-10-10,4.0,5,8,2,48,225,16.98,False
+"San Francisco, CA",True,221,110,0,196,29,2026-08-19,2026-10-01,6.0,16,8,2,34,221,20.53,False
+"Seattle, WA",True,192,105,0,174,24,2026-08-19,2026-09-30,5.0,16,7,2,34,192,18.99,False
+"Austin, TX",True,183,202,0,170,22,2026-08-19,2026-10-06,5.5,10,6,2,34,181,16.5,False
+"Cleveland, OH",True,152,82,0,142,14,2026-08-06,2026-10-17,8.5,8,6,2,47,152,11.72,False
+"Buffalo, NY",True,147,266,0,107,11,2026-08-07,2026-12-20,13.0,38,7,2,46,147,7.53,False
+"Pittsburgh, PA",True,114,337,0,75,11,2026-08-08,2026-12-21,4.0,37,4,2,45,113,8.75,False
+"Newark, NJ",True,30,135,0,18,1,2026-08-12,2027-03-19,30.0,12,1,2,38,0,0.0,False
+"College Park, MD",True,0,0,0,0,0,,,0.0,0,0,0,0,0,0.0,False
+"Hollywood, CA",False,0,2,0,0,0,2026-09-25,2026-09-25,0.0,0,0,0,0,0,0.0,False
