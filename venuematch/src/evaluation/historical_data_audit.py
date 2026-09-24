@@ -365,13 +365,19 @@ def _market_coverage(
     enriched: pd.DataFrame,
     venues: pd.DataFrame,
     eligibility: pd.DataFrame,
+    target_markets: pd.DataFrame | None = None,
 ) -> list[dict[str, Any]]:
     venue_markets = {
         _market_label(row.get("city"), row.get("state"))
         for row in venues.to_dict("records")
     }
     event_markets = set(enriched["market"].dropna().unique().tolist())
-    markets = sorted((venue_markets | event_markets) - {None})
+    configured_markets = {
+        _market_label(row.get("city"), row.get("state"))
+        for row in (target_markets.to_dict("records") if target_markets is not None else [])
+    }
+    configured_markets.discard(None)
+    markets = sorted((venue_markets | event_markets | configured_markets) - {None})
     rows: list[dict[str, Any]] = []
     for market in markets:
         group = enriched.loc[enriched["market"] == market]
@@ -394,6 +400,7 @@ def _market_coverage(
         rows.append(
             {
                 "market": market,
+                "is_target_market": market in configured_markets,
                 "historical_event_count": int(len(historical)),
                 "future_event_count": int(len(future)),
                 "missing_date_count": int((group["temporal_class"] == "missing_date").sum()),
@@ -706,7 +713,8 @@ def build_historical_data_audit(
         else pd.DataFrame()
     )
     folds = recommend_temporal_folds(eligibility)
-    market_coverage = _market_coverage(enriched, venues, eligibility)
+    target_markets = frames.get("target_markets")
+    market_coverage = _market_coverage(enriched, venues, eligibility, target_markets)
     useful_markets = sum(bool(row["useful_for_temporal_benchmark"]) for row in market_coverage)
     artist_summary, artist_rows = _artist_coverage(artists, artist_genres, historical)
     venue_summary, venue_rows = _venue_coverage(venues, venue_history, historical)
@@ -754,6 +762,9 @@ def build_historical_data_audit(
             "as_of_utc_date": as_of_day.date().isoformat(),
             "relationship_unit": "artist-event-venue relationship",
             "read_only": True,
+            "configured_target_markets": (
+                int(len(target_markets)) if target_markets is not None else None
+            ),
         },
         "temporal_coverage": temporal,
         "provider_coverage": _provider_coverage(enriched),
@@ -781,12 +792,17 @@ def run_historical_data_audit(
     db_target: DatabaseTarget = None,
     as_of: date | datetime | str | pd.Timestamp | None = None,
 ) -> dict[str, Any]:
+    from src.ingestion.service import TARGET_CITIES
+
     frames = {
         "artists": repository.get_artists(db_target),
         "venues": repository.get_venues(db_target),
         "events": repository.get_events(db_target),
         "artist_genres": repository.get_artist_genres(db_target),
         "venue_genre_history": repository.get_venue_genre_history(db_target),
+        "target_markets": pd.DataFrame(
+            [{"city": target.city, "state": target.state} for target in TARGET_CITIES]
+        ),
     }
     return build_historical_data_audit(frames, as_of)
 
@@ -810,6 +826,7 @@ def render_markdown_report(audit: dict[str, Any]) -> str:
     decision = audit["setlist_recommendation"]
     market_columns = [
         ("market", "Market"),
+        ("is_target_market", "Target"),
         ("historical_event_count", "Historical"),
         ("future_event_count", "Future"),
         ("unique_artists", "Artists"),

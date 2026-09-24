@@ -3,6 +3,7 @@ from __future__ import annotations
 import pandas as pd
 
 from src.evaluation.historical_data_audit import (
+    build_historical_data_audit,
     build_venue_activity,
     candidate_venues_for_event,
     classify_events,
@@ -169,3 +170,39 @@ def test_unresolved_relationship_is_not_benchmark_eligible() -> None:
     unresolved = eligibility.set_index("event_id").loc["e1"]
     assert not bool(unresolved["eligible"])
     assert "unresolved_artist" in unresolved["ineligible_reasons"]
+
+
+def test_configured_sparse_market_appears_without_events() -> None:
+    events = pd.DataFrame(
+        [_event("e1", "a1", "v1", "2024-01-01", "Alpha", "AA")]
+    )
+    frames = {
+        "artists": pd.DataFrame(
+            [
+                {
+                    "id": "a1",
+                    "name": "Artist 1",
+                    "musicbrainz_id": None,
+                    "lastfm_listeners": None,
+                    "popularity": None,
+                }
+            ]
+        ),
+        "venues": _venues(),
+        "events": events,
+        "artist_genres": pd.DataFrame([{"artist_id": "a1", "genre": "rock"}]),
+        "venue_genre_history": pd.DataFrame(
+            [{"venue_id": "v1", "genre": "rock", "event_count": 1}]
+        ),
+        "target_markets": pd.DataFrame(
+            [
+                {"city": "Alpha", "state": "AA"},
+                {"city": "Gamma", "state": "CC"},
+            ]
+        ),
+    }
+    audit = build_historical_data_audit(frames, AS_OF)
+    markets = {row["market"]: row for row in audit["market_coverage"]}
+    assert markets["Gamma, CC"]["is_target_market"] is True
+    assert markets["Gamma, CC"]["historical_event_count"] == 0
+    assert markets["Gamma, CC"]["future_event_count"] == 0
