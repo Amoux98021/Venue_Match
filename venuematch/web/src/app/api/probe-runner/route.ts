@@ -6,7 +6,20 @@ const form = `<!doctype html><html><body><form method="post">
   <button type="submit">Run aggregate batch</button>
 </form></body></html>`;
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  if (request.nextUrl.searchParams.get("collect") === "1") {
+    const collector = `<!doctype html><html><body><p id="status">Collecting aggregates.</p>
+      <script id="collection" type="application/json"></script>
+      <script>
+        const keys = Object.keys(sessionStorage).filter((key) => key.startsWith("vm-setlist-batch-"));
+        const rows = keys.map((key) => JSON.parse(sessionStorage.getItem(key))).sort((a, b) => a.metadata.batch_offset - b.metadata.batch_offset);
+        document.getElementById("collection").textContent = JSON.stringify(rows);
+        document.getElementById("status").textContent = "Collected " + rows.length + " aggregate batches.";
+      </script></body></html>`;
+    return new Response(collector, {
+      headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
+    });
+  }
   return new Response(form, {
     headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
   });
@@ -43,7 +56,17 @@ export async function POST(request: NextRequest) {
   });
   const payload = await upstream.text();
   const safePayload = payload.replaceAll("<", "\\u003c");
-  const document = `<!doctype html><html><body><p>Aggregate ready.</p><script id="aggregate" type="application/json">${safePayload}</script></body></html>`;
+  const document = `<!doctype html><html><body><p id="status">Aggregate ready.</p>
+    <script id="aggregate" type="application/json">${safePayload}</script>
+    <script>
+      const payload = document.getElementById("aggregate").textContent;
+      sessionStorage.setItem("vm-setlist-batch-${offset}", payload);
+      const keys = Object.keys(sessionStorage).filter((key) => key.startsWith("vm-setlist-batch-"));
+      const rows = keys.map((key) => JSON.parse(sessionStorage.getItem(key)));
+      const requests = rows.reduce((total, row) => total + row.request_metrics.requests, 0);
+      const artists = rows.reduce((total, row) => total + row.summary.artists_queried, 0);
+      document.getElementById("status").textContent = "Aggregate stored in session. Batches: " + rows.length + ". Artists: " + artists + ". Successful requests: " + requests + ".";
+    </script></body></html>`;
   return new Response(document, {
     status: upstream.status,
     headers: {
