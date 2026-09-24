@@ -7,6 +7,11 @@ from src.evaluation.historical_data_audit import (
     write_audit_artifacts,
 )
 from src.evaluation.jambase_history_probe import run_jambase_history_probe
+from src.evaluation.musicbrainz_history_probe import (
+    build_musicbrainz_probe_input,
+    run_musicbrainz_history_probe,
+    write_musicbrainz_probe_artifacts,
+)
 
 __all__ = [
     "build_historical_data_audit",
@@ -16,4 +21,7 @@ __all__ = [
     "run_historical_data_audit",
     "write_audit_artifacts",
     "run_jambase_history_probe",
+    "build_musicbrainz_probe_input",
+    "run_musicbrainz_history_probe",
+    "write_musicbrainz_probe_artifacts",
 ]
